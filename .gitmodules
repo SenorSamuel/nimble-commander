@@ -1,0 +1,9 @@
+[submodule "3rd_Party/rapidjson"]
+	path = 3rd_Party/rapidjson
+	url = https://github.com/miloyip/rapidjson.git
+[submodule "3rd_Party/AppAuth/AppAuth-iOS"]
+	path = 3rd_Party/AppAuth/AppAuth-iOS
+	url = https://github.com/openid/AppAuth-iOS.git
+[submodule "3rd_Party/LetsMove/LetsMove"]
+	path = 3rd_Party/LetsMove/LetsMove
+	url = https://github.com/potionfactory/LetsMove.git
