@@ -1,5 +1,5 @@
 # Nimble Commander - Open Source
-Nimble Commander is a dual-pane file manager for macOS, which was developed with an emphasis on performance, keyboard navigation and flexibility.  
+Nimble Commander is a dual-pane file manager for macOS, which was developed with an emphasis on performance, keyboard navigation and flexibility. Project's website: http://magnumbytes.com.  
 This repository contains per-version snapshots of the project's source code.
 
 # How to Build
