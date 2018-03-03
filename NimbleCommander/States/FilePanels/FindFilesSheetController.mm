@@ -16,6 +16,7 @@
 #include <NimbleCommander/Bootstrap/ActivationManager.h>
 #include <NimbleCommander/Bootstrap/AppDelegate.h>
 #include <NimbleCommander/Core/VFSInstanceManager.h>
+#include <NimbleCommander/Core/VFSInstancePromise.h>
 #include <NimbleCommander/Core/Theming/CocoaAppearanceManager.h>
 #include "FindFilesSheetController.h"
 
@@ -550,7 +551,8 @@ private:
                                                    nullptr,
                                                    [&]{ return m_FileSearch->IsStopped(); } );
     if( host )
-        VFSInstanceManager::Instance().TameVFS(host);
+        if( self.vfsInstanceManager )
+            self.vfsInstanceManager->TameVFS(host);
     
     return host;
 }
@@ -651,7 +653,7 @@ private:
         });
     }
     else { // as a window
-        if( InternalViewerWindowController *window = [AppDelegate.me findInternalViewerWindowForPath:p onVFS:vfs]  ) {
+        if( InternalViewerWindowController *window = [NCAppDelegate.me findInternalViewerWindowForPath:p onVFS:vfs]  ) {
             // already has this one
             [window showWindow:self];
             

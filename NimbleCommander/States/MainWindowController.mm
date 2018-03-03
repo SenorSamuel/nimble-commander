@@ -24,7 +24,6 @@
 #include <NimbleCommander/Core/Theming/CocoaAppearanceManager.h>
 #include <NimbleCommander/Core/UserNotificationsCenter.h>
 #include <Operations/Pool.h>
-#include <Operations/AggregateProgressTracker.h>
 
 using namespace nc;
 
@@ -33,15 +32,15 @@ static const auto g_ConfigModalInternalViewer = "viewer.modalMode";
 
 static auto g_CocoaRestorationFilePanelsStateKey = @"filePanelsState";
 static const auto g_JSONRestorationFilePanelsStateKey = "filePanel.defaultState";
-static __weak MainWindowController *g_LastFocusedMainWindowController = nil;
+static __weak NCMainWindowController *g_LastFocusedNCMainWindowController = nil;
 
-@interface MainWindowController()
+@interface NCMainWindowController()
 
 @property (nonatomic, readonly) bool toolbarVisible;
 
 @end
 
-@implementation MainWindowController
+@implementation NCMainWindowController
 {
     vector<NSObject<NCMainWindowState> *> m_WindowState; // .back is current state
     MainWindowFilePanelState    *m_PanelState;
@@ -55,45 +54,25 @@ static __weak MainWindowController *g_LastFocusedMainWindowController = nil;
     shared_ptr<nc::ops::Pool>    m_OperationsPool;
 }
 
-@synthesize filePanelsState = m_PanelState;
 @synthesize terminalState = m_Terminal;
 @synthesize toolbarVisible = m_ToolbarVisible;
 
-+ (MainWindowController*)lastFocused
++ (NCMainWindowController*)lastFocused
 {
-    return (MainWindowController*)g_LastFocusedMainWindowController;
+    return (NCMainWindowController*)g_LastFocusedNCMainWindowController;
 }
 
-- (instancetype)initBase
+- (instancetype) initWithWindow:(NCMainWindow*)window
 {
-    auto window = [[NCMainWindow alloc] init];
     if( !window )
         return nil;
     
     self = [super initWithWindow:window];
-    if(!self)
+    if( !self )
         return nil;
 
     window.delegate = self;
-    window.restorationClass = self.class;
-    m_OperationsPool = nc::ops::Pool::Make();
-    __weak MainWindowController *weak_self = self;
-    m_OperationsPool->SetDialogCallback([weak_self](NSWindow *_dlg,
-                                                    function<void (NSModalResponse)> _cb){
-        NSBeep();
-        if( MainWindowController *wnd = weak_self)
-            [wnd beginSheet:_dlg completionHandler:^(NSModalResponse rc) { _cb(rc); }];
-    });
-    m_OperationsPool->SetOperationCompletionCallback([weak_self]
-                                                     (const shared_ptr<nc::ops::Operation>& _op){
-        if( MainWindowController *wnd = weak_self)
-            dispatch_to_main_queue([=]{
-                auto &center = core::UserNotificationsCenter::Instance();
-                center.ReportCompletedOperation(*_op, wnd.window);
-            });
-    });
     
-    AppDelegate.me.operationsProgressTracker.AddPool(*m_OperationsPool);
     
     m_ToolbarVisible = GlobalConfig().GetBool( g_ConfigShowToolbar );
     
@@ -105,84 +84,9 @@ static __weak MainWindowController *g_LastFocusedMainWindowController = nil;
     auto callback = objc_callback(self, @selector(onConfigShowToolbarChanged));
     m_ConfigTickets.emplace_back(GlobalConfig().Observe(g_ConfigShowToolbar, move(callback)));
     
-    [AppDelegate.me addMainWindow:self];
-    
     [self invalidateRestorableState];
     
     return self;
-}
-
-- (instancetype) initDefaultWindow
-{
-    if( self = [self initBase] ) {
-       
-        m_PanelState = [[MainWindowFilePanelState alloc]
-            initDefaultFileStateWithFrame:self.window.contentView.frame
-            andPool:*m_OperationsPool];
-        
-        [self pushState:m_PanelState];
-    }
-    
-    return self;
-}
-
-- (instancetype) initWithLastOpenedWindowOptions
-{
-    if( self = [self initBase] ) {
-        
-        // almost "free" state initially
-        m_PanelState = [[MainWindowFilePanelState alloc]
-            initEmptyFileStateWithFrame:self.window.contentView.frame
-            andPool:*m_OperationsPool];
-
-        // copy options from previous window, if there's any
-        [self restoreDefaultWindowStateFromLastOpenedWindow];
-
-        // load initial contents
-        [m_PanelState loadDefaultPanelContent];
-        
-        // run the state
-        [self pushState:m_PanelState];
-    }
-    return self;
-}
-
-- (instancetype) initRestoringLastWindowFromConfig
-{
-    if( self = [self initBase] ) {
-        
-        // almost "free" state initially
-        m_PanelState = [[MainWindowFilePanelState alloc]
-            initEmptyFileStateWithFrame:self.window.contentView.frame
-            andPool:*m_OperationsPool];
-        
-        if( ![self restoreDefaultWindowStateFromConfig] )
-            [m_PanelState loadDefaultPanelContent];
-        
-        // run the state
-        [self pushState:m_PanelState];
-    }
-    return self;
-}
-
-- (instancetype) initForSystemRestoration
-{
-   if( self = [self initBase] ) {
-       
-        // almost "free" state initially
-        m_PanelState = [[MainWindowFilePanelState alloc]
-            initEmptyFileStateWithFrame:self.window.contentView.frame
-            andPool:*m_OperationsPool];
-       
-        // run the state
-        [self pushState:m_PanelState];
-    }
-    return self;
-}
-
-- (instancetype) init
-{
-    return [self initDefaultWindow];
 }
 
 -(void) dealloc
@@ -200,17 +104,8 @@ static __weak MainWindowController *g_LastFocusedMainWindowController = nil;
                               state:(NSCoder *)state
                   completionHandler:(void (^)(NSWindow *, NSError *))completionHandler
 {
-    if( AppDelegate.me.isRunningTests ) {
-        completionHandler(nil, nil);
-        return;
-    }
-    
-    NSWindow *window = nil;
-    if( [identifier isEqualToString:NCMainWindow.defaultIdentifier] ) {
-        auto ctrl = [[MainWindowController alloc] initForSystemRestoration];
-        window = ctrl.window;
-    }
-    completionHandler(window, nil);
+    // this is a legacy stub. it needs to be here for some time.
+    completionHandler(nil, nil);
 }
 
 - (void)encodeRestorableStateWithCoder:(NSCoder *)coder
@@ -228,18 +123,23 @@ static __weak MainWindowController *g_LastFocusedMainWindowController = nil;
 
 - (bool)restoreDefaultWindowStateFromConfig
 {
+    return [self.class restoreDefaultWindowStateFromConfig:m_PanelState];
+}
+
++ (bool)restoreDefaultWindowStateFromConfig:(MainWindowFilePanelState*)_state
+{
     // supposed to be called when windows are restored upon app start
     const auto panels_state = StateConfig().Get(g_JSONRestorationFilePanelsStateKey);
     if( panels_state.IsNull() )
         return false;
     
-    return [m_PanelState decodeRestorableState:panels_state];
+    return [_state decodeRestorableState:panels_state];
 }
 
 - (void)restoreDefaultWindowStateFromLastOpenedWindow
 {
     // supposed to be called when new window is allocated
-    MainWindowController *last = g_LastFocusedMainWindowController;
+    NCMainWindowController *last = g_LastFocusedNCMainWindowController;
     if( !last )
         return;
     
@@ -250,7 +150,7 @@ static __weak MainWindowController *g_LastFocusedMainWindowController = nil;
 
 + (bool)canRestoreDefaultWindowStateFromLastOpenedWindow
 {
-    return g_LastFocusedMainWindowController != nil;
+    return g_LastFocusedNCMainWindowController != nil;
 }
 
 - (void)restoreStateWithCoder:(NSCoder *)coder
@@ -293,10 +193,19 @@ static __weak MainWindowController *g_LastFocusedMainWindowController = nil;
     m_ToolbarVisible = _toolbar_visible;
 }
 
+static int CountMainWindows()
+{
+    int count = 0;
+    for( NSWindow *wnd in NSApp.windows )
+        if( [wnd isKindOfClass:NCMainWindow.class] )
+             count++;
+    return count;
+}
+
 - (void)windowWillClose:(NSNotification *)notification
 {
     // the are the last main window - need to save current state as "default" in state config
-    if( AppDelegate.me.mainWindowControllers.size() == 1 ) {
+    if( CountMainWindows() == 1 ) {
         if( auto panels_state = [m_PanelState encodeRestorableState] )
             StateConfig().Set(g_JSONRestorationFilePanelsStateKey, *panels_state);
         [m_PanelState saveDefaultInitialState];
@@ -318,8 +227,6 @@ static __weak MainWindowController *g_LastFocusedMainWindowController = nil;
     }
     m_PanelState = nil;
     m_Terminal = nil;
-    
-    [AppDelegate.me removeMainWindow:self];
 }
 
 - (BOOL)windowShouldClose:(id)sender
@@ -338,7 +245,7 @@ static __weak MainWindowController *g_LastFocusedMainWindowController = nil;
 
 - (void)didBecomeKeyWindow
 {
-    g_LastFocusedMainWindowController = self;
+    g_LastFocusedNCMainWindowController = self;
 }
 
 - (IBAction)OnShowToolbar:(id)sender
@@ -428,7 +335,7 @@ static __weak MainWindowController *g_LastFocusedMainWindowController = nil;
             }
         }
         else { // as a window
-            if( auto *window = [AppDelegate.me findInternalViewerWindowForPath:_filepath
+            if( auto *window = [NCAppDelegate.me findInternalViewerWindowForPath:_filepath
                                                                          onVFS:_host] ) {
                 // already has this one
                 dispatch_to_main_queue([=]{
@@ -567,6 +474,44 @@ static const auto g_ShowToolbarTitle = NSLocalizedString(@"Show Toolbar", "Menu 
         wnd = nil;
         ctrl = nil;
     }];
+}
+
+- (MainWindowFilePanelState*)filePanelsState
+{
+    return m_PanelState;
+}
+
+- (void)setFilePanelsState:(MainWindowFilePanelState *)filePanelsState
+{
+    assert( m_PanelState == nil ); // at this moment we don't support overrring of existing panel.
+    assert( m_WindowState.empty() );
+    assert( filePanelsState != nil );
+    
+    m_PanelState = filePanelsState;
+    [self pushState:m_PanelState];
+}
+
+- (void)setOperationsPool:(nc::ops::Pool&)_pool
+{
+    assert( m_OperationsPool == nullptr ); // at this moment we don't support overriding of a pool.
+    m_OperationsPool = _pool.shared_from_this();
+    
+    __weak NCMainWindowController *weak_self = self;
+    auto dialog_callback = [weak_self](NSWindow *_dlg, function<void (NSModalResponse)> _cb) {
+        NSBeep();
+        if( NCMainWindowController *wnd = weak_self)
+            [wnd beginSheet:_dlg completionHandler:^(NSModalResponse rc) { _cb(rc); }];
+    };
+    m_OperationsPool->SetDialogCallback( move(dialog_callback) );
+    
+    auto completion_callback = [weak_self] (const shared_ptr<nc::ops::Operation>& _op) {
+        if( NCMainWindowController *wnd = weak_self)
+            dispatch_to_main_queue([=]{
+                auto &center = core::UserNotificationsCenter::Instance();
+                center.ReportCompletedOperation(*_op, wnd.window);
+            });
+    };
+    m_OperationsPool->SetOperationCompletionCallback( move(completion_callback) );
 }
 
 @end

@@ -1,8 +1,12 @@
 // Copyright (C) 2013-2017 Michael Kazakov. Subject to GNU General Public License version 3.
 #pragma once
 
-#include <VFS/VFS.h>
-#include "../../Core/VFSInstanceManager.h"
+#include <VFS/VFS_fwd.h>
+#include "ListingPromise.h"
+
+namespace nc::core {
+    class VFSInstanceManager;
+}
 
 namespace nc::panel {
 
@@ -12,14 +16,7 @@ namespace nc::panel {
 class History
 {
 public:
-    // currenly we store only vfs info and directory inside it
-    struct Path
-    {
-        bool operator==(const Path&_rhs) const noexcept;
-        bool operator!=(const Path&_rhs) const noexcept;
-        VFSInstanceManager::Promise     vfs;
-        string                          path;
-    };
+    using Path = ListingPromise;
     
     bool IsRecording() const noexcept;
     unsigned Length() const noexcept;
@@ -41,14 +38,14 @@ public:
     
     /**
      * Will turn History into "recording" state.
-     * History was in playing state - will discard anything in front of current position.
+     * If history was in playing state - will discard anything in front of current position.
      */
-    void Put(const VFSHostPtr &_vfs, string _directory_path);
+    void Put(const VFSListing &_listing );
     
     /**
      * Will return nullptr if history is in "recording" state.
      */
-    const Path* Current() const;
+    const Path* CurrentPlaying() const;
 
     /**
      * Will put History in "playing" state and adjust playing position accordingly,
@@ -56,9 +53,16 @@ public:
      */
     const Path* RewindAt(size_t _indx);
     
+    /**
+     * Returns the one most recently visited, either in a recording state or in a playing state.
+     */
+    const Path* MostRecent() const;
+    
     vector<reference_wrapper<const Path>> All() const;
     
     const string &LastNativeDirectoryVisited() const noexcept;
+    
+    void SetVFSInstanceManager(core::VFSInstanceManager &_mgr);
 private:
     deque<Path>         m_History;
      // lesser the index - farther the history entry
@@ -67,6 +71,7 @@ private:
     bool                m_IsRecording = true;
     string              m_LastNativeDirectory;
     enum {              m_HistoryLength = 128 };
+    core::VFSInstanceManager *m_VFSMgr = nullptr;
 };
 
 }

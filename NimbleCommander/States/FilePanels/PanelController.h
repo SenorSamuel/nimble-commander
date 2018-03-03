@@ -1,39 +1,37 @@
-// Copyright (C) 2013-2017 Michael Kazakov. Subject to GNU General Public License version 3.
+// Copyright (C) 2013-2018 Michael Kazakov. Subject to GNU General Public License version 3.
 #pragma once
 
+#include <Utility/MIMResponder.h>
+
 #include "PanelViewDelegate.h"
-#include <NimbleCommander/Core/rapidjson_fwd.h>
+#include "PanelViewKeystrokeSink.h"
 #include <VFS/VFS.h>
 
-struct VFSInstancePromise;
-class NetworkConnectionsManager;
 @class PanelController;
 @class PanelView;
 @class BriefSystemOverview;
 @class MainWindowFilePanelState;
-@class MainWindowController;
+@class NCMainWindowController;
 
-namespace nc::panel {
-class History;
-struct PersistentLocation;
+namespace nc {
 
-namespace data {
-    struct SortMode;
-    struct HardFilter;
-    struct Model;
+    namespace core {
+        class VFSInstancePromise;
+        class VFSInstanceManager;
+    }
+    namespace panel {
+        class History;
+        struct PersistentLocation;
+        class PanelViewLayoutsStorage;
+        namespace data {
+            struct SortMode;
+            struct HardFilter;
+            struct Model;
+        }
+    }
 }
-
-struct ControllerStateEncoding
-{
-    enum Options {
-        EncodeDataOptions   =  1,
-        EncodeViewOptions   =  2,
-        EncodeContentState  =  4,
-        
-        EncodeNothing       =  0,
-        EncodeEverything    = -1
-    };
-};
+    
+namespace nc::panel {
 
 class ActivityTicket
 {
@@ -73,6 +71,7 @@ public:
     
     /* optional */
     string              RequestFocusedEntry     = "";
+    vector<string>      RequestSelectedEntries  = {};
     bool                PerformAsynchronous     = true;
     bool                LoadPreviousViewState   = false;
     
@@ -95,10 +94,10 @@ public:
 /**
  * PanelController is reponder to enable menu events processing
  */
-@interface PanelController : NSResponder<PanelViewDelegate>
+@interface PanelController : AttachedResponder<PanelViewDelegate, NCPanelViewKeystrokeSink>
 
 @property (nonatomic) MainWindowFilePanelState* state;
-@property (nonatomic, readonly) MainWindowController* mainWindowController;
+@property (nonatomic, readonly) NCMainWindowController* mainWindowController;
 @property (nonatomic, readonly) PanelView* view;
 @property (nonatomic, readonly) const nc::panel::data::Model& data;
 @property (nonatomic, readonly) nc::panel::History& history;
@@ -107,13 +106,13 @@ public:
 @property (nonatomic, readonly) NSWindow* window;
 @property (nonatomic, readonly) bool receivesUpdateNotifications; // returns true if underlying vfs will notify controller that content has changed
 @property (nonatomic, readonly) bool ignoreDirectoriesOnSelectionByMask;
-@property (nonatomic, readonly) int vfsFetchingFlags;
+@property (nonatomic, readonly) unsigned long vfsFetchingFlags;
 @property (nonatomic) int layoutIndex;
-@property (nonatomic, readonly) NetworkConnectionsManager& networkConnectionsManager;
+@property (nonatomic, readonly) nc::panel::PanelViewLayoutsStorage& layoutStorage;
+@property (nonatomic, readonly) nc::core::VFSInstanceManager& vfsInstanceManager;
 
-- (optional<rapidjson::StandaloneValue>) encodeRestorableState;
-- (bool) loadRestorableState:(const rapidjson::StandaloneValue&)_state;
-- (optional<rapidjson::StandaloneValue>) encodeStateWithOptions:(nc::panel::ControllerStateEncoding::Options)_options;
+- (instancetype)initWithLayouts:(shared_ptr<nc::panel::PanelViewLayoutsStorage>)_layout
+             vfsInstanceManager:(nc::core::VFSInstanceManager&)_vfs_mgr;
 
 - (void) refreshPanel; // reload panel contents
 - (void) forceRefreshPanel; // user pressed cmd+r by default
@@ -166,11 +165,13 @@ public:
 loadPreviousState:(bool)_load_state
           async:(bool)_asynchronous;
 
-// sync operation
-- (void) loadNonUniformListing:(const shared_ptr<VFSListing>&)_listing;
+/**
+ * Loads existing listing into the panel. Save to call from any thread.
+ */
+- (void) loadListing:(const shared_ptr<VFSListing>&)_listing;
 
 // will load previous view state if any
-- (void) GoToVFSPromise:(const VFSInstancePromise&)_promise onPath:(const string&)_directory;
+- (void) GoToVFSPromise:(const nc::core::VFSInstancePromise&)_promise onPath:(const string&)_directory;
 // some params later
 
 - (void) goToPersistentLocation:(const nc::panel::PersistentLocation &)_location;
@@ -189,13 +190,16 @@ loadPreviousState:(bool)_load_state
  */
 - (void) scheduleDelayedFocusing:(nc::panel::DelayedFocusing)request;
 
-- (void) clearQuickSearchFiltering;
-- (void) QuickSearchSetCriteria:(NSString *)_text;
-
 - (void) requestQuickRenamingOfItem:(VFSListingItem)_item to:(const string&)_new_filename;
 
 - (void)updateAttachedQuickLook;
 - (void)updateAttachedBriefSystemOverview;
+
+/**
+ * Allows changing Data options and ensures consitency with View afterwards.
+ */
+- (void)changeDataOptions:(const function<void(nc::panel::data::Model& _data)>&)_workload;
+
 @end
 
 // internal stuff, move it somewehere else

@@ -8,7 +8,10 @@
 
 // these routines implicitly use the following components:
 // 1. NetworkConnectionsManager
-// 2. VFSInstanceManager
+
+namespace nc::core {
+    class VFSInstanceManager;
+}
 
 namespace nc::panel {
 
@@ -24,7 +27,7 @@ struct PersistentLocation
 class PanelDataPersisency
 {
 public:
-    PanelDataPersisency( NetworkConnectionsManager &_conn_manager );
+    PanelDataPersisency( const NetworkConnectionsManager &_conn_manager );
 
     static string MakeFootprintString( const PersistentLocation &_loc );
     static size_t MakeFootprintStringHash( const PersistentLocation &PersistentLocation );
@@ -52,7 +55,9 @@ public:
     static int CreateVFSFromState( const json &_state, VFSHostPtr &_host );
     
     // uses current state to retrieve existing vfs if possible
-    static int CreateVFSFromLocation( const PersistentLocation &_state, VFSHostPtr &_host );
+    static int CreateVFSFromLocation( const PersistentLocation &_state,
+                                     VFSHostPtr &_host,
+                                     core::VFSInstanceManager &_inst_mgr);
     
     static string GetPathFromState( const json &_state );
     
@@ -82,7 +87,7 @@ uuid: "uuid"
  */
 
 private:
-    NetworkConnectionsManager &m_ConnectionsManager;
+    const NetworkConnectionsManager &m_ConnectionsManager;
 };
 
 }

@@ -13,7 +13,7 @@ bool FindFiles::Predicate( PanelController *_target ) const
 }
 
 static shared_ptr<VFSListing> FetchSearchResultsAsListing(const vector<VFSPath> &_filepaths,
-                                                          int _fetch_flags,
+                                                          unsigned long _fetch_flags,
                                                           const VFSCancelChecker &_cancel_checker)
 {
     vector<VFSListingPtr> listings;
@@ -37,6 +37,7 @@ static shared_ptr<VFSListing> FetchSearchResultsAsListing(const vector<VFSPath> 
 void FindFiles::Perform( PanelController *_target, id _sender ) const
 {
     FindFilesSheetController *sheet = [FindFilesSheetController new];
+    sheet.vfsInstanceManager = &_target.vfsInstanceManager;
     sheet.host = _target.isUniform ?
         _target.vfs :
         _target.view.item.Host();
@@ -53,9 +54,8 @@ void FindFiles::Perform( PanelController *_target, id _sender ) const
                                                      );
                 if( l )
                     dispatch_to_main_queue([=]{
-                        [panel loadNonUniformListing:l];
+                        [panel loadListing:l];
                     });
-                
             };
             [panel commitCancelableLoadingTask:move(task)];
         }

@@ -29,6 +29,7 @@
 #import "MMSlideButtonsAnimation.h"
 #import "NSView+MMTabBarViewExtensions.h"
 #import "MMTabBarItem.h"
+#import "MMAddButton.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -55,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
     // control basics
     NSTabView                       *_tabView;                    // the tab view being navigated
     MMOverflowPopUpButton           *_overflowPopUpButton;        // for too many tabs
-    MMRolloverButton                *_addTabButton;
+    MMAddButton                     *_addTabButton;
     MMTabBarController              *_controller;
 
     // Spring-loading.
@@ -69,6 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL                            _disableTabClose;
     BOOL                            _hideForSingleTab;
     BOOL                            _showAddTabButton;
+    BOOL                            _allowAddTabButtonMenu;
     BOOL                            _sizeButtonsToFit;
     BOOL                            _useOverflowMenu;
     BOOL                            _alwaysShowActiveTab;
@@ -341,7 +343,8 @@ static NSMutableDictionary *registeredStyleClasses = nil;
 
 - (void)windowStatusDidChange:(NSNotification *)notification {
 
-    [self _updateImages];
+    // why on earth this call was here??? this is madness!
+   // [self _updateImages];
 
 	[self setNeedsDisplay:YES];
 
@@ -961,6 +964,20 @@ static NSMutableDictionary *registeredStyleClasses = nil;
 	_showAddTabButton = value;
     
     [self setNeedsUpdate:YES];
+}
+
+- (BOOL)allowAddTabButtonMenu {
+    return _allowAddTabButtonMenu;
+}
+
+- (void)setAllowAddTabButtonMenu:(BOOL)allowAddTabButtonMenu
+{
+    _allowAddTabButtonMenu = allowAddTabButtonMenu;
+    
+    if( _allowAddTabButtonMenu  )
+        [_addTabButton setLongPressAction:@selector(_showAddNewTabMenu:)];
+    else
+        [_addTabButton setLongPressAction:nil];
 }
 
 - (NSInteger)buttonMinWidth {
@@ -2193,6 +2210,13 @@ static NSMutableDictionary *registeredStyleClasses = nil;
     }
 }
 
+- (void)_showAddNewTabMenu:(id)sender {
+    
+    if (_delegate && [_delegate respondsToSelector:@selector(showAddTabMenuForTabView:)]) {
+        [_delegate showAddTabMenuForTabView:_tabView];
+    }
+}
+
 - (void)_overflowMenuAction:(id)sender {
 	NSTabViewItem *tabViewItem = (NSTabViewItem *)[sender representedObject];
 	[_tabView selectTabViewItem:tabViewItem];
@@ -2289,6 +2313,7 @@ static NSMutableDictionary *registeredStyleClasses = nil;
 	_canCloseOnlyTab = NO;
 	_disableTabClose = NO;
 	_showAddTabButton = NO;
+    _allowAddTabButtonMenu = NO;
 	_hideForSingleTab = NO;
 	_sizeButtonsToFit = NO;
 	_isHidden = NO;
@@ -2776,7 +2801,7 @@ StaticImage(AquaTabNewRollover)
     }
         // new tab button
 	NSRect addTabButtonRect = [self addTabButtonRect];
-	_addTabButton = [[MMRolloverButton alloc] initWithFrame:addTabButtonRect];
+	_addTabButton = [[MMAddButton alloc] initWithFrame:addTabButtonRect];
     
     [_addTabButton setImage:_staticAquaTabNewImage()];
     [_addTabButton setAlternateImage:_staticAquaTabNewPressedImage()];
@@ -2793,6 +2818,11 @@ StaticImage(AquaTabNewRollover)
 
     [_addTabButton setTarget:self];
     [_addTabButton setAction:@selector(_addNewTab:)];
+
+    if( _allowAddTabButtonMenu  )
+        [_addTabButton setLongPressAction:@selector(_showAddNewTabMenu:)];
+    else
+        [_addTabButton setLongPressAction:nil];
     
     [self addSubview:_addTabButton];
 
