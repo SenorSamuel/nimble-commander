@@ -9,6 +9,11 @@
 //    any layout; // perhaps switch to variant?
 //    // may be PanelListViewColumnsLayout, PanelBriefViewColumnsLayout or
 //    // PanelViewDisabledLayout at the moment.
+
+using namespace nc::panel;
+
+namespace nc::panel {
+
 bool PanelViewLayout::is_disabled() const
 {
     return  any_cast<PanelViewDisabledLayout>(&layout) != nullptr;
@@ -260,7 +265,7 @@ vector<shared_ptr<const PanelViewLayout>> PanelViewLayoutsStorage::GetAllLayouts
     return m_Layouts;
 }
 
-const shared_ptr<const PanelViewLayout> PanelViewLayoutsStorage::LastResortLayout() const
+const shared_ptr<const PanelViewLayout> PanelViewLayoutsStorage::LastResortLayout()
 {
     static const shared_ptr<const PanelViewLayout> l = make_shared<PanelViewLayout>( L1() );
     return l;
@@ -346,6 +351,8 @@ void PanelViewLayoutsStorage::CommitChanges(bool _fire_observers)
     if(_fire_observers)
         FireObservers();
     dispatch_to_background([=]{ WriteLayoutsToConfig(); });
+}
+
 }
 
 @implementation PanelViewLayoutsMenuDelegate

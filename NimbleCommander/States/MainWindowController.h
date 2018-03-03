@@ -7,17 +7,16 @@
 @class OperationsController;
 @class MainWindowFilePanelState;
 @class NCTermShellState;
+@class NCMainWindow;
 
 namespace nc::ops {
     class Pool;
     class Operation;
 }
 
-@interface MainWindowController : NSWindowController <NSWindowDelegate, NSWindowRestoration>
+@interface NCMainWindowController : NSWindowController <NSWindowDelegate, NSWindowRestoration>
 
-- (instancetype) initDefaultWindow;
-- (instancetype) initWithLastOpenedWindowOptions;
-- (instancetype) initRestoringLastWindowFromConfig;
+- (instancetype) initWithWindow:(NCMainWindow*)window;
 
 // Window state manipulations
 - (void)ResignAsWindowState:(id)_state;
@@ -38,20 +37,22 @@ namespace nc::ops {
                                      fileTitle:(const string&)_file_title;
 
 - (bool)restoreDefaultWindowStateFromConfig;
++ (bool)restoreDefaultWindowStateFromConfig:(MainWindowFilePanelState*)_state;
 - (void)restoreDefaultWindowStateFromLastOpenedWindow;
 + (bool)canRestoreDefaultWindowStateFromLastOpenedWindow;
 
 // Access to states
-@property (nonatomic, readonly) MainWindowFilePanelState*   filePanelsState;  // one and only one per window
+@property (nonatomic, readwrite) MainWindowFilePanelState*  filePanelsState;  // one and only one per window
 @property (nonatomic, readonly) NCTermShellState*           terminalState;    // zero or one per window
 @property (nonatomic, readonly) id<NCMainWindowState>       topmostState;
 @property (nonatomic, readonly) nc::ops::Pool&              operationsPool;
 
+- (void)setOperationsPool:(nc::ops::Pool&)_pool;
 
 // Toolbar support
 - (void)OnShowToolbar:(id)sender;
 
-+ (MainWindowController*)lastFocused;
++ (NCMainWindowController*)lastFocused;
 
 - (void)enqueueOperation:(const shared_ptr<nc::ops::Operation> &)_operation;
 - (void)beginSheet:(NSWindow *)sheetWindow completionHandler:(void (^)(NSModalResponse rc))handler;

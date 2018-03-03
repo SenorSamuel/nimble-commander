@@ -1,17 +1,8 @@
 // Copyright (C) 2013-2017 Michael Kazakov. Subject to GNU General Public License version 3.
 #include "PanelHistory.h"
+#include "../../Core/VFSInstanceManager.h"
 
 namespace nc::panel {
-
-bool History::Path::operator==(const Path&_rhs) const noexcept
-{
-    return vfs == _rhs.vfs && path == _rhs.path;
-}
-
-bool History::Path::operator!=(const Path&_rhs) const noexcept
-{
-    return !(*this == _rhs);
-}
 
 bool History::IsRecording() const noexcept
 {
@@ -61,27 +52,42 @@ void History::MoveBack()
     }
 }
 
-const History::Path* History::Current() const
+const History::Path* History::CurrentPlaying() const
 {
     if( m_IsRecording )
         return nullptr;
     return &*next(begin(m_History), m_PlayingPosition);
 }
-
-
-void History::Put(const VFSHostPtr &_vfs, string _directory_path)
-{
-    if( _vfs->IsNativeFS() )
-        m_LastNativeDirectory = _directory_path;
     
-    Path new_path;
-    new_path.vfs = VFSInstanceManager::Instance().TameVFS(_vfs);
-    new_path.path = move(_directory_path);
+const History::Path* History::MostRecent() const
+{
+    if( m_IsRecording ) {
+        if( !m_History.empty() )
+            return &m_History.back();
+        return nullptr;
+    }
+    else {
+        assert(m_PlayingPosition < m_History.size());
+        return &*next(begin(m_History), m_PlayingPosition);
+    }
+}
+
+void History::Put(const VFSListing &_listing )
+{
+    if( _listing.IsUniform() && _listing.Host()->IsNativeFS() )
+        m_LastNativeDirectory = _listing.Directory();
+    
+    const auto adapter = [this](const shared_ptr<VFSHost>&_host) -> core::VFSInstancePromise {
+        if( !m_VFSMgr )
+            return {};
+        return m_VFSMgr->TameVFS(_host);
+    };
+    ListingPromise promise{_listing, adapter};
     
     if( m_IsRecording ) {
-        if( !m_History.empty() && m_History.back() == new_path )
+        if( !m_History.empty() && m_History.back() == promise )
             return;
-        m_History.emplace_back( move(new_path) );
+        m_History.emplace_back( move(promise) );
         if( m_History.size() > m_HistoryLength )
             m_History.pop_front();
     }
@@ -89,10 +95,11 @@ void History::Put(const VFSHostPtr &_vfs, string _directory_path)
         assert(m_PlayingPosition < m_History.size());
         auto i = begin(m_History);
         advance(i, m_PlayingPosition);
-        if( *i != new_path ) {
+        if( *i != promise ) {
             m_IsRecording = true;
-            m_History.resize(m_PlayingPosition + 1);
-            m_History.emplace_back( move(new_path) );
+            while( m_History.size() > m_PlayingPosition + 1 )
+                m_History.pop_back();
+            m_History.emplace_back( move(promise) );
         }
     }
 }
@@ -123,7 +130,7 @@ const History::Path* History::RewindAt(size_t _indx)
     m_IsRecording = false;
     m_PlayingPosition = (unsigned)_indx;
     
-    return Current();
+    return CurrentPlaying();
 }
 
 const string &History::LastNativeDirectoryVisited() const noexcept
@@ -131,4 +138,9 @@ const string &History::LastNativeDirectoryVisited() const noexcept
     return m_LastNativeDirectory;
 }
 
+void History::SetVFSInstanceManager(core::VFSInstanceManager &_mgr)
+{
+    m_VFSMgr = &_mgr;
+}
+    
 }

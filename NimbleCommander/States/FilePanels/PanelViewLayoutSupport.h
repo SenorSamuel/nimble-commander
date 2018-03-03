@@ -5,6 +5,8 @@
 #include "Brief/Layout.h"
 #include "List/Layout.h"
 
+namespace nc::panel {
+
 struct PanelViewDisabledLayout
 {
     /* dummy layout, used to indicate that this layout is not active */
@@ -68,7 +70,7 @@ public:
     /**
      * Should be used when panel is forced to use a disabled layout.
      */
-    const shared_ptr<const PanelViewLayout> LastResortLayout() const;
+    static const shared_ptr<const PanelViewLayout> LastResortLayout();
     
     /**
      * Default layout that will be used by file panel upon initialization.
@@ -90,8 +92,11 @@ private:
     const char*                                 m_ConfigPath;    
 };
 
+}
+
 @interface PanelViewLayoutsMenuDelegate : NSObject<NSMenuDelegate>
 
-- (id) initWithStorage:(PanelViewLayoutsStorage&)_storage;
+- (id) initWithStorage:(nc::panel::PanelViewLayoutsStorage&)_storage;
 
 @end
+

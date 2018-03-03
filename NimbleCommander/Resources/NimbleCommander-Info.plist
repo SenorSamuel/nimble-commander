@@ -36,7 +36,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.2.3</string>
+	<string>1.2.4</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
@@ -46,7 +46,7 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2013-2017 Michael Kazakov.
+	<string>Copyright © 2013-2018 Michael Kazakov.
 All rights reserved.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
@@ -61,7 +61,7 @@ All rights reserved.</string>
 				<string>Reveal in Nimble Commander</string>
 			</dict>
 			<key>NSMessage</key>
-			<string>IClicked</string>
+			<string>revealItemService</string>
 			<key>NSPortName</key>
 			<string>Nimble Commander</string>
 			<key>NSRequiredContext</key>
@@ -71,6 +71,23 @@ All rights reserved.</string>
 				<string>public.file-url</string>
 				<string>NSStringPboardType</string>
 			</array>
+		</dict>
+		<dict>
+			<key>NSSendFileTypes</key>
+			<array>
+				<string>public.directory</string>
+			</array>
+			<key>NSMenuItem</key>
+			<dict>
+				<key>default</key>
+				<string>Open Folder in Nimble Commander</string>
+			</dict>
+			<key>NSMessage</key>
+			<string>openFolderService</string>
+			<key>NSPortName</key>
+			<string>Nimble Commander</string>
+			<key>NSRequiredContext</key>
+			<dict/>
 		</dict>
 	</array>
 	<key>SMPrivilegedExecutables</key>

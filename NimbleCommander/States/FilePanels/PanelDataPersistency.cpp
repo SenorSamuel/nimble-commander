@@ -19,11 +19,11 @@
 #include <NimbleCommander/Core/rapidjson.h>
 #include "PanelDataPersistency.h"
 
-
-#include <NimbleCommander/Core/ConfigBackedNetworkConnectionsManager.h>
+// THIS IS TEMPORARY!!!
+#include <NimbleCommander/Bootstrap/AppDelegateCPP.h>
 static NetworkConnectionsManager &ConnectionsManager()
 {
-    return ConfigBackedNetworkConnectionsManager::Instance();
+    return *nc::AppDelegate::NetworkConnectionsManager();
 }
 
 namespace nc::panel {
@@ -79,7 +79,7 @@ struct ArcUnRAR
 
 };
 
-PanelDataPersisency::PanelDataPersisency( NetworkConnectionsManager &_conn_manager ):
+PanelDataPersisency::PanelDataPersisency( const NetworkConnectionsManager &_conn_manager ):
     m_ConnectionsManager(_conn_manager)
 {
 }
@@ -614,7 +614,9 @@ static VFSHostPtr FindFitting(
     return nullptr;
 }
 
-int PanelDataPersisency::CreateVFSFromLocation( const PersistentLocation &_state, VFSHostPtr &_host )
+int PanelDataPersisency::CreateVFSFromLocation(const PersistentLocation &_state,
+                                               VFSHostPtr &_host,
+                                               core::VFSInstanceManager &_inst_mgr)
 {
     if( _state.hosts.empty() ) {
         // short path for most common case - native vfs
@@ -623,7 +625,7 @@ int PanelDataPersisency::CreateVFSFromLocation( const PersistentLocation &_state
     }
 
     vector<VFSHostPtr> vfs;
-    auto alive_hosts = VFSInstanceManager::Instance().AliveHosts(); // make it optional perhaps?
+    auto alive_hosts = _inst_mgr.AliveHosts(); // make it optional perhaps?
     try {
         for( auto &h: _state.hosts) {
             const VFSHostPtr back = vfs.empty() ? nullptr : vfs.back();

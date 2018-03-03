@@ -9,7 +9,16 @@
 #include "Views/FilePanelMainSplitView.h"
 #include "FilesDraggingSource.h"
 #include "PanelHistory.h"
+#include "PanelData.h"
 #include "TabContextMenu.h"
+#include <NimbleCommander/GeneralUI/FilterPopUpMenu.h>
+#include "Helpers/ClosedPanelsHistory.h"
+#include "Helpers/LocationFormatter.h"
+#include <NimbleCommander/Core/AnyHolder.h>
+#include "Actions/NavigateHistory.h"
+#include "Helpers/RecentlyClosedMenuDelegate.h"
+
+using namespace nc::panel;
 
 template <class _Cont, class _Tp>
 inline void erase_from(_Cont &__cont_, const _Tp& __value_)
@@ -162,12 +171,99 @@ static string TabNameForController( PanelController* _controller )
     [self spawnNewTabInTabView:aTabView autoDirectoryLoading:true activateNewPanel:true];
 }
 
+static NSString *ShrinkTitleForRecentlyClosedMenu(NSString *_title)
+{
+    static const auto text_font = [NSFont menuFontOfSize:13];
+    static const auto text_attributes = @{NSFontAttributeName:text_font};
+    static const auto max_width = 450;
+    return StringByTruncatingToWidth(_title, max_width, kTruncateAtMiddle, text_attributes);
+}
+
+- (void)showAddTabMenuForTabView:(NSTabView *)aTabView
+{
+    if( !m_ClosedPanelsHistory )
+        return;
+    
+    FilterPopUpMenu *menu = [[FilterPopUpMenu alloc] initWithTitle:@"Recently Closed"];
+    
+    FilePanelsTabbedHolder *holder = nil;
+    if( aTabView == m_SplitView.leftTabbedHolder.tabView )
+        holder = m_SplitView.leftTabbedHolder;
+    if( aTabView == m_SplitView.rightTabbedHolder.tabView )
+        holder = m_SplitView.rightTabbedHolder;
+    if( !holder )
+        return;
+    
+    const auto side = holder == m_SplitView.leftTabbedHolder ?
+        RestoreClosedTabRequest::Side::Left :
+        RestoreClosedTabRequest::Side::Right;
+
+    const auto max_closed_entries_to_show = 12;
+    auto recents = m_ClosedPanelsHistory->FrontElements( max_closed_entries_to_show );
+    for( auto &v: recents ) {
+        
+        const auto options = (loc_fmt::Formatter::RenderOptions)
+                                (loc_fmt::Formatter::RenderMenuTitle   |
+                                 loc_fmt::Formatter::RenderMenuTooltip |
+                                 loc_fmt::Formatter::RenderMenuIcon );
+        const auto rep = loc_fmt::ListingPromiseFormatter{}.Render(options, v);
+        NSMenuItem *item = [[NSMenuItem alloc] init];
+        item.title = ShrinkTitleForRecentlyClosedMenu(rep.menu_title);
+        item.toolTip = rep.menu_tooltip;
+        item.image = rep.menu_icon;
+        item.target = self;
+        item.action = @selector(respawnRecentlyClosedCallout:);
+        item.representedObject = [[AnyHolder alloc] initWithAny:any{
+            RestoreClosedTabRequest(side, v)
+        }];
+        [menu addItem:item];
+    }
+    
+    const auto add_rc = holder.tabBar.addTabButtonRect;
+    NSPoint p;
+    p.x = add_rc.origin.x;
+    p.y = NSMaxY(add_rc) + 4;
+    [menu popUpMenuPositioningItem:nil
+                         atLocation:p
+                             inView:holder.tabBar];
+}
+
+- (void)respawnRecentlyClosedCallout:(id)sender
+{
+    if( auto menu_item = objc_cast<NSMenuItem>(sender) ) {
+        auto any_holder = objc_cast<AnyHolder>(menu_item.representedObject);
+        if( !any_holder )
+            return;
+        
+        if( auto request = any_cast<RestoreClosedTabRequest>(&any_holder.any) ) {
+            const auto tab_view = request->side == RestoreClosedTabRequest::Side::Left ?
+                m_SplitView.leftTabbedHolder.tabView :
+                m_SplitView.rightTabbedHolder.tabView;
+            [self spawnNewTabInTabView:tab_view
+                 loadingListingPromise:request->promise
+                      activateNewPanel:true];
+            if( m_ClosedPanelsHistory )
+                m_ClosedPanelsHistory->RemoveListing(request->promise);
+        }
+    }
+}
+
+- (void)spawnNewTabInTabView:(NSTabView *)_aTabView
+      loadingListingPromise:(const ListingPromise&)_promise
+           activateNewPanel:(bool)_activate
+{
+    auto pc = [self spawnNewTabInTabView:_aTabView
+                    autoDirectoryLoading:true
+                        activateNewPanel:_activate];
+    ListingPromiseLoader{}.Load(_promise, pc);
+}
+
 - (PanelController*)spawnNewTabInTabView:(NSTabView *)aTabView
                     autoDirectoryLoading:(bool)_load
                         activateNewPanel:(bool)_activate
 {
-    PanelController *pc = [PanelController new];
-    pc.state = self;
+    PanelController *pc = m_PanelFactory();
+    [self attachPanel:pc];
     PanelController *source = nil;
     if( aTabView == m_SplitView.leftTabbedHolder.tabView ) {
         source = self.leftPanelController;
@@ -183,23 +279,8 @@ static string TabNameForController( PanelController* _controller )
         assert(0); // something is really broken
     
     [pc copyOptionsFromController:source];
-    if( _load ) {
-        if( source.isUniform ) {
-            [pc GoToDir:source.currentDirectoryPath
-                    vfs:source.vfs
-           select_entry:""
-                  async:false];
-        }
-        else if( !source.history.Empty() ) {
-            auto h = source.history.All();
-            [pc GoToVFSPromise:h.back().get().vfs onPath:h.back().get().path];
-        }
-        else
-            [pc GoToDir:CommonPaths::Home()
-                    vfs:VFSNativeHost::SharedHost()
-           select_entry:""
-                  async:false];
-    }
+    if( _load )
+        [pc loadListing:source.data.ListingPtr()];
     
     if( _activate )
         [self ActivatePanelByController:pc];
@@ -253,6 +334,7 @@ shouldDragTabViewItem:(NSTabViewItem *)tabViewItem
     // NB! at this moment a tab was already removed from NSTabView objects
     if( auto pv = objc_cast<PanelView>(tabViewItem.view) )
         if( auto pc = objc_cast<PanelController>(pv.delegate) ) {
+            [self panelWillBeClosed:pc];
             erase_from(m_LeftPanelControllers, pc);
             erase_from(m_RightPanelControllers, pc);
         }

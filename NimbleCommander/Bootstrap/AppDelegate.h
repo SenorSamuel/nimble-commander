@@ -2,27 +2,37 @@
 
 #pragma once
 
-#include <VFS/VFS.h>
+#include <VFS/VFS_fwd.h>
 
-@class MainWindowController;
+@class NCMainWindowController;
 @class InternalViewerWindowController;
 @class GenericConfigObjC;
 @class AppStoreHelper;
 class ExternalToolsStorage;
-class PanelViewLayoutsStorage;
 class ThemesManager;
 class ExternalEditorsStorage;
-class FavoriteLocationsStorage;
 class NetworkConnectionsManager;
 
-namespace nc::ops {
-    class AggregateProgressTracker;
+namespace nc {
+    
+    namespace core {
+        class VFSInstanceManager;
+        class ServicesHandler;
+    }
+
+    namespace ops {
+        class AggregateProgressTracker;
+    }
+    
+    namespace panel {
+        class PanelViewLayoutsStorage;
+        class FavoriteLocationsStorage;
+        class ClosedPanelsHistory;
+    }
+
 }
 
-@interface AppDelegate : NSObject <NSApplicationDelegate>
-
-- (void) addMainWindow:(MainWindowController*) _wnd;
-- (void) removeMainWindow:(MainWindowController*) _wnd;
+@interface NCAppDelegate : NSObject <NSApplicationDelegate>
 
 - (void) addInternalViewerWindow:(InternalViewerWindowController*) _wnd;
 - (void) removeInternalViewerWindow:(InternalViewerWindowController*) _wnd;
@@ -36,12 +46,12 @@ namespace nc::ops {
 - (bool) askToResetDefaults;
 
 /** Returns all main windows currently present. */
-@property (nonatomic, readonly) vector<MainWindowController*> mainWindowControllers;
+@property (nonatomic, readonly) const vector<NCMainWindowController*> &mainWindowControllers;
 
 /**
- * Equal to (AppDelegate*) ((NSApplication*)NSApp).delegate.
+ * Equal to (NCAppDelegate*) ((NSApplication*)NSApp).delegate.
  */
-+ (AppDelegate*) me;
++ (NCAppDelegate*) me;
 
 /**
  * Signals that applications runs in unit testing environment.
@@ -70,18 +80,30 @@ namespace nc::ops {
 
 @property (nonatomic, readonly) ExternalToolsStorage& externalTools;
 
-@property (nonatomic, readonly) PanelViewLayoutsStorage& panelLayouts;
+@property (nonatomic, readonly)
+    const shared_ptr<nc::panel::PanelViewLayoutsStorage> &panelLayouts;
 
 @property (nonatomic, readonly) ThemesManager& themesManager;
 
 @property (nonatomic, readonly) ExternalEditorsStorage& externalEditorsStorage;
 
-@property (nonatomic, readonly) FavoriteLocationsStorage& favoriteLocationsStorage;
+@property (nonatomic, readonly)
+    const shared_ptr<nc::panel::FavoriteLocationsStorage>& favoriteLocationsStorage;
 
-@property (nonatomic, readonly) NetworkConnectionsManager &networkConnectionsManager;
+@property (nonatomic, readonly)
+    const shared_ptr<NetworkConnectionsManager> &networkConnectionsManager;
 
 @property (nonatomic, readonly) AppStoreHelper *appStoreHelper;
 
 @property (nonatomic, readonly) nc::ops::AggregateProgressTracker &operationsProgressTracker;
+
+@property (nonatomic, readonly)
+    const shared_ptr<nc::panel::ClosedPanelsHistory> &closedPanelsHistory;
+
+@property (nonatomic, readonly)
+    nc::core::VFSInstanceManager &vfsInstanceManager;
+
+@property (nonatomic, readonly)
+    nc::core::ServicesHandler &servicesHandler;
 
 @end

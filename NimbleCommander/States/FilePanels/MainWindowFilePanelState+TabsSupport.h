@@ -1,4 +1,5 @@
 // Copyright (C) 2014-2017 Michael Kazakov. Subject to GNU General Public License version 3.
+#pragma once
 #include "MainWindowFilePanelState.h"
 
 @class FilePanelsTabbedHolder;
@@ -13,6 +14,7 @@
 - (void) closeOtherTabsForController:(PanelController*)_controller;
 - (void) updateTabBarsVisibility;
 - (void) updateTabBarButtons;
+- (void) respawnRecentlyClosedCallout:(id)sender;
 
 /**
  * if file panel is not active - return 0, otherwise return amount of tabs on active side

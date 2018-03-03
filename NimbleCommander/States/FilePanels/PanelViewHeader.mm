@@ -1,4 +1,4 @@
-// Copyright (C) 2016-2017 Michael Kazakov. Subject to GNU General Public License version 3.
+// Copyright (C) 2016-2018 Michael Kazakov. Subject to GNU General Public License version 3.
 #include <Utility/Layout.h>
 #include <Utility/ColoredSeparatorLine.h>
 #include <Utility/VerticallyCenteredTextFieldCell.h>
@@ -6,7 +6,6 @@
 #include <NimbleCommander/Core/Theming/Theme.h>
 #include <NimbleCommander/Core/Theming/ThemesManager.h>
 #include "PanelView.h"
-#include "PanelController.h"
 #include "PanelViewHeader.h"
 
 using namespace nc::panel;
@@ -41,11 +40,11 @@ static bool IsDark( NSColor *_color )
     return Brightness(_color) < 0.60;
 }
 
-@interface PanelViewHeader()
+@interface NCPanelViewHeader()
 @property (nonatomic) IBOutlet NSMenu *sortMenuPopup;
 @end
 
-@implementation PanelViewHeader
+@implementation NCPanelViewHeader
 {
     NSTextField         *m_PathTextField;
     NSSearchField       *m_SearchTextField;
@@ -58,6 +57,7 @@ static bool IsDark( NSColor *_color )
     __weak PanelView    *m_PanelView;
     data::SortMode      m_SortMode;
     function<void(data::SortMode)> m_SortModeChangeCallback;
+    function<void(NSString*)> m_SearchRequestChangeCallback;
     ThemesManager::ObservationTicket    m_ThemeObservation;    
 }
 
@@ -94,8 +94,10 @@ static bool IsDark( NSColor *_color )
         m_SearchTextField.drawsBackground = false;
         m_SearchTextField.focusRingType = NSFocusRingTypeNone;
         m_SearchTextField.alignment = NSTextAlignmentCenter;
-        ((NSSearchFieldCell*)m_SearchTextField.cell).cancelButtonCell.target = self;
-        ((NSSearchFieldCell*)m_SearchTextField.cell).cancelButtonCell.action = @selector(onSearchFieldDiscardButton:);
+        m_SearchTextField.delegate = self;
+        auto search_tf_cell = (NSSearchFieldCell*)m_SearchTextField.cell;
+        search_tf_cell.cancelButtonCell.target = self;
+        search_tf_cell.cancelButtonCell.action = @selector(onSearchFieldDiscardButton:);
         [self addSubview:m_SearchTextField];
         
         m_SearchMatchesField= [[NSTextField alloc] initWithFrame:NSRect()];
@@ -140,8 +142,8 @@ static bool IsDark( NSColor *_color )
         [self setupAppearance];
         [self setupLayout];
         
-        __weak PanelViewHeader* weak_self = self;
-        m_ThemeObservation = AppDelegate.me.themesManager.ObserveChanges(
+        __weak NCPanelViewHeader* weak_self = self;
+        m_ThemeObservation = NCAppDelegate.me.themesManager.ObserveChanges(
             ThemesManager::Notifications::FilePanelsHeader, [weak_self]{
             if( auto strong_self = weak_self ) {
                 [strong_self setupAppearance];
@@ -210,9 +212,10 @@ static bool IsDark( NSColor *_color )
                                                      attribute:NSLayoutAttributeBottom
                                                     multiplier:1
                                                       constant:1]];
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-(0)-[m_SeparatorLine]-(0)-|" options:0 metrics:nil views:views]];
-    
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"[m_SearchMatchesField(==50)]-(20)-|" options:0 metrics:nil views:views]];
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+            @"|-(0)-[m_SeparatorLine]-(0)-|" options:0 metrics:nil views:views]];
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+            @"[m_SearchMatchesField(==50)]-(20)-|" options:0 metrics:nil views:views]];
     [self addConstraint:LayoutConstraintForCenteringViewVertically(m_SearchMatchesField, self)];
 }
 
@@ -243,27 +246,39 @@ static bool IsDark( NSColor *_color )
     m_PathTextField.stringValue = _path;
 }
 
+- (void)setupBindingToPanelView:(PanelView*)_panel_view
+{
+    static const auto isnil = @{NSValueTransformerNameBindingOption:NSIsNilTransformerName};
+    static const auto isnotnil = @{NSValueTransformerNameBindingOption:NSIsNotNilTransformerName};
+    assert( m_PanelView == nullptr );
+    
+    m_PanelView = _panel_view;
+    [_panel_view addObserver:self forKeyPath:@"active" options:0 context:NULL];
+    [self observeValueForKeyPath:@"active" ofObject:_panel_view change:nil context:nil];
+    [m_SearchTextField bind:@"hidden" toObject:self withKeyPath:@"searchPrompt" options:isnil];
+    [m_SearchMatchesField bind:@"hidden" toObject:self withKeyPath:@"searchPrompt" options:isnil];
+    [m_PathTextField bind:@"hidden" toObject:self withKeyPath:@"searchPrompt" options:isnotnil];
+    [m_SortButton bind:@"hidden" toObject:self withKeyPath:@"searchPrompt" options:isnotnil];
+    [m_BusyIndicator bind:@"hidden" toObject:self withKeyPath:@"searchPrompt" options:isnotnil];
+}
+
+- (void)removeBindings
+{
+    assert( m_PanelView != nullptr );
+    [m_PanelView removeObserver:self forKeyPath:@"active"];
+    [m_SearchTextField unbind:@"hidden"];
+    [m_SearchMatchesField unbind:@"hidden"];
+    [m_PathTextField unbind:@"hidden"];
+    [m_SortButton unbind:@"hidden"];
+    [m_BusyIndicator unbind:@"hidden"];
+}
+
 - (void)viewDidMoveToSuperview
 {
-    if( auto pv = objc_cast<PanelView>(self.superview) ) {
-        m_PanelView = pv;
-        [pv addObserver:self forKeyPath:@"active" options:0 context:NULL];
-        [self observeValueForKeyPath:@"active" ofObject:pv change:nil context:nil];
-        
-        [m_SearchTextField bind:@"hidden" toObject:self withKeyPath:@"searchPrompt" options:@{NSValueTransformerNameBindingOption:NSIsNilTransformerName}];
-        [m_SearchMatchesField bind:@"hidden" toObject:self withKeyPath:@"searchPrompt" options:@{NSValueTransformerNameBindingOption:NSIsNilTransformerName}];
-        [m_PathTextField bind:@"hidden" toObject:self withKeyPath:@"searchPrompt" options:@{NSValueTransformerNameBindingOption:NSIsNotNilTransformerName}];
-        [m_SortButton bind:@"hidden" toObject:self withKeyPath:@"searchPrompt" options:@{NSValueTransformerNameBindingOption:NSIsNotNilTransformerName}];
-        [m_BusyIndicator bind:@"hidden" toObject:self withKeyPath:@"searchPrompt" options:@{NSValueTransformerNameBindingOption:NSIsNotNilTransformerName}];
-    }
-    else {
-        [m_PanelView removeObserver:self forKeyPath:@"active"];
-        [m_SearchTextField unbind:@"hidden"];
-        [m_SearchMatchesField unbind:@"hidden"];
-        [m_PathTextField unbind:@"hidden"];
-        [m_SortButton unbind:@"hidden"];
-        [m_BusyIndicator bind:@"hidden" toObject:self withKeyPath:@"searchPrompt" options:@{NSValueTransformerNameBindingOption:NSIsNotNilTransformerName}];
-    }
+    if( auto panel_view = objc_cast<PanelView>(self.superview) )
+        [self setupBindingToPanelView:panel_view];
+    else
+        [self removeBindings];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -294,6 +309,16 @@ static bool IsDark( NSColor *_color )
     }
 }
 
+- (void)setSearchRequestChangeCallback:(function<void (NSString *)>)searchRequestChangeCallback
+{
+    m_SearchRequestChangeCallback = move(searchRequestChangeCallback);
+}
+
+- (function<void (NSString *)>)searchRequestChangeCallback
+{
+    return m_SearchRequestChangeCallback;
+}
+
 - (NSString*) searchPrompt
 {
     return m_SearchPrompt;
@@ -308,8 +333,6 @@ static bool IsDark( NSColor *_color )
     m_SearchPrompt = searchPrompt.length ? searchPrompt : nil;
     [self didChangeValueForKey:@"searchPrompt"];
     
-    
-    // ...
     m_SearchTextField.stringValue = m_SearchPrompt ? m_SearchPrompt : @"";
     [m_SearchTextField invalidateIntrinsicContentSize];
     [self layout];
@@ -329,16 +352,25 @@ static bool IsDark( NSColor *_color )
 {
     self.searchPrompt = nil;
     [self.window makeFirstResponder:m_PanelView];
-    [((PanelController*)m_PanelView.delegate) clearQuickSearchFiltering];
+    if( m_SearchRequestChangeCallback )
+        m_SearchRequestChangeCallback(nil);
+}
+
+- (void)controlTextDidChange:(NSNotification *)obj;
+{
+    if( obj.object == m_SearchTextField ) {
+        NSString *v = m_SearchTextField.stringValue;
+        if( v.length > 0) {
+            if( m_SearchRequestChangeCallback )
+                m_SearchRequestChangeCallback(v);
+        }
+        else
+            [self onSearchFieldDiscardButton:m_SearchTextField];
+    }
 }
 
 - (void) onSearchFieldAction:(id)sender
 {
-    NSString *v = m_SearchTextField.stringValue;
-    if( v.length > 0)
-        [((PanelController*)m_PanelView.delegate) QuickSearchSetCriteria:v];
-    else
-        [self onSearchFieldDiscardButton:sender];
 }
 
 - (void) onSortButtonAction:(id)sender

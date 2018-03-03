@@ -467,6 +467,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (assign) BOOL showAddTabButton;
 
+@property (assign) BOOL allowAddTabButtonMenu;
+
 /**
  *  Minimum width of tab bar buttons
  */
@@ -631,6 +633,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Adding tabs
 - (void)addNewTabToTabView:(NSTabView *)aTabView;
+- (void)showAddTabMenuForTabView:(NSTabView *)aTabView;
 
     // Contextual menu support
 - (NSMenu *)tabView:(NSTabView *)aTabView menuForTabViewItem:(NSTabViewItem *)tabViewItem;

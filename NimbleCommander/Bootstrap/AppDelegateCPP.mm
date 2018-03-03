@@ -1,24 +1,36 @@
-// Copyright (C) 2016 Michael Kazakov. Subject to GNU General Public License version 3.
+// Copyright (C) 2016-2018 Michael Kazakov. Subject to GNU General Public License version 3.
 #include <Utility/PathManip.h>
 #include "../../3rd_Party/NSFileManagerDirectoryLocations/NSFileManager+DirectoryLocations.h"
 #include "AppDelegate.h"
 #include "AppDelegateCPP.h"
 
-const string &AppDelegateCPP::ConfigDirectory()
+namespace nc {
+
+const string &AppDelegate::ConfigDirectory()
 {
-    return AppDelegate.me.configDirectory;
+    return NCAppDelegate.me.configDirectory;
 }
 
-const string &AppDelegateCPP::StateDirectory()
+const string &AppDelegate::StateDirectory()
 {
-    return AppDelegate.me.stateDirectory;
+    return NCAppDelegate.me.stateDirectory;
 }
 
-const string &AppDelegateCPP::SupportDirectory()
+const string &AppDelegate::SupportDirectory()
 {
-    if( AppDelegate.me )
-        return AppDelegate.me.supportDirectory;
+    if( NCAppDelegate.me )
+        return NCAppDelegate.me.supportDirectory;
     
-    static string support_dir = EnsureTrailingSlash( NSFileManager.defaultManager.applicationSupportDirectory.fileSystemRepresentationSafe );
+    static string support_dir = []{
+        auto path = NSFileManager.defaultManager.applicationSupportDirectory;
+        return EnsureTrailingSlash( path.fileSystemRepresentationSafe );
+    }();
     return support_dir;
+}
+
+const shared_ptr<NetworkConnectionsManager> &AppDelegate::NetworkConnectionsManager()
+{
+    return NCAppDelegate.me.networkConnectionsManager;
+}
+
 }

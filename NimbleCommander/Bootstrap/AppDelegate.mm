@@ -17,6 +17,7 @@
 #include <NimbleCommander/Core/FeedbackManager.h>
 #include <NimbleCommander/Core/AppStoreHelper.h>
 #include <NimbleCommander/Core/Dock.h>
+#include <NimbleCommander/Core/ServicesHandler.h>
 #include <NimbleCommander/Core/ConfigBackedNetworkConnectionsManager.h>
 #include <NimbleCommander/Core/ConnectionsMenuDelegate.h>
 #include <NimbleCommander/Core/Theming/ThemesManager.h>
@@ -26,7 +27,7 @@
 #include <NimbleCommander/States/FilePanels/ExternalToolsSupport.h>
 #include <NimbleCommander/States/FilePanels/ExternalEditorInfo.h>
 #include <NimbleCommander/States/FilePanels/PanelViewLayoutSupport.h>
-#include <NimbleCommander/States/FilePanels/Favorites.h>
+#include <NimbleCommander/States/FilePanels/FavoritesImpl.h>
 #include <NimbleCommander/States/FilePanels/FavoritesWindowController.h>
 #include <NimbleCommander/States/FilePanels/FavoritesMenuDelegate.h>
 #include <NimbleCommander/Preferences/Preferences.h>
@@ -43,6 +44,11 @@
 #include "ConfigWiring.h"
 #include "VFSInit.h"
 #include "Interactions.h"
+#include <NimbleCommander/States/MainWindow.h>
+#include "AppDelegate+MainWindowCreation.h"
+#include <NimbleCommander/States/FilePanels/Helpers/ClosedPanelsHistoryImpl.h>
+#include <NimbleCommander/States/FilePanels/Helpers/RecentlyClosedMenuDelegate.h>
+#include <NimbleCommander/Core/VFSInstanceManagerImpl.h>
 
 using namespace nc::bootstrap;
 
@@ -54,7 +60,6 @@ static auto g_StateDirPostfix = @"/State/";
 static GenericConfig *g_Config = nullptr;
 static GenericConfig *g_State = nullptr;
 
-static const auto g_ConfigRestoreLastWindowState = "filePanel.general.restoreLastWindowState";
 static const auto g_ConfigForceFn = "general.alwaysUseFnKeysAsFunctional";
 static const auto g_ConfigExternalToolsList = "externalTools.tools_v1";
 static const auto g_ConfigLayoutsList = "filePanel.layout.layouts_v1";
@@ -125,17 +130,19 @@ static void CheckDefaultsReset()
         }
 }
 
-static AppDelegate *g_Me = nil;
+static NCAppDelegate *g_Me = nil;
 
-@interface AppDelegate()
+@interface NCAppDelegate()
 
 @property (nonatomic, readonly) nc::core::Dock& dock;
 
+@property (nonatomic) IBOutlet NSMenu *recentlyClosedMenu;
+
 @end
 
-@implementation AppDelegate
+@implementation NCAppDelegate
 {
-    vector<MainWindowController *>              m_MainWindows;
+    vector<NCMainWindowController *>            m_MainWindows;
     vector<InternalViewerWindowController*>     m_ViewerWindows;
     spinlock                                    m_ViewerWindowsLock;
     bool                m_IsRunningTests;
@@ -145,6 +152,8 @@ static AppDelegate *g_Me = nil;
     vector<GenericConfig::ObservationTicket> m_ConfigObservationTickets;
     AppStoreHelper *m_AppStoreHelper;
     upward_flag         m_FinishedLaunching;
+    shared_ptr<nc::panel::FavoriteLocationsStorageImpl> m_Favorites;
+    NSMutableArray      *m_FilesToOpen;
 }
 
 @synthesize isRunningTests = m_IsRunningTests;
@@ -160,6 +169,7 @@ static AppDelegate *g_Me = nil;
     if(self) {
         g_Me = self;
         m_IsRunningTests = NSClassFromString(@"XCTestCase") != nullptr;
+        m_FilesToOpen = [[NSMutableArray alloc] init];
         CheckMASReceipt();
         CheckDefaultsReset();
         m_SupportDirectory =
@@ -170,7 +180,7 @@ static AppDelegate *g_Me = nil;
     return self;
 }
 
-+ (AppDelegate*) me
++ (NCAppDelegate*) me
 {
     return g_Me;
 }
@@ -197,8 +207,10 @@ static AppDelegate *g_Me = nil;
         if( sm.Empty() ) {
             sm.AskAccessForPathSync(CommonPaths::Home(), false);
             showed_modal_dialog = true;
-            if( m_MainWindows.empty() )
-                [self allocateDefaultMainWindow];
+            if( self.mainWindowControllers.empty() ) {
+                auto ctrl = [self allocateDefaultMainWindow];
+                [ctrl showWindow:self];
+            }
         }
     }
     
@@ -225,26 +237,38 @@ static AppDelegate *g_Me = nil;
     };
     
     static auto layouts_delegate = [[PanelViewLayoutsMenuDelegate alloc]
-                                    initWithStorage:self.panelLayouts];
+                                    initWithStorage:*self.panelLayouts];
     item_for_action("menu.view.toggle_layout_1").menu.delegate = layouts_delegate;
 
     auto manage_fav_item = item_for_action("menu.go.favorites.manage");
     static auto favorites_delegate = [[FavoriteLocationsMenuDelegate alloc]
-                                      initWithStorage:self.favoriteLocationsStorage
+                                      initWithStorage:*self.favoriteLocationsStorage
                                       andManageMenuItem:manage_fav_item];
     manage_fav_item.menu.delegate = favorites_delegate;
   
     auto clear_freq_item = [NSApp.mainMenu itemWithTagHierarchical:14220];
     static auto frequent_delegate = [[FrequentlyVisitedLocationsMenuDelegate alloc]
-        initWithStorage:self.favoriteLocationsStorage andClearMenuItem:clear_freq_item];
+        initWithStorage:*self.favoriteLocationsStorage andClearMenuItem:clear_freq_item];
     clear_freq_item.menu.delegate = frequent_delegate;
     
     const auto connections_menu_item = item_for_action("menu.go.connect.network_server");
     static const auto conn_delegate = [[ConnectionsMenuDelegate alloc] initWithManager:
         []()->NetworkConnectionsManager &{
-        return g_Me.networkConnectionsManager;
+        return *g_Me.networkConnectionsManager;
     }];
     connections_menu_item.menu.delegate = conn_delegate;
+    
+    auto panels_locator = []() -> MainWindowFilePanelState* {
+        if( auto wnd = objc_cast<NCMainWindow>(NSApp.keyWindow) )
+            if( auto ctrl = objc_cast<NCMainWindowController>(wnd.delegate) )
+                return ctrl.filePanelsState;
+        return nil;
+    };
+    static const auto recently_closed_delegate = [[NCPanelsRecentlyClosedMenuDelegate alloc]
+                                                  initWithMenu:self.recentlyClosedMenu
+                                                  storage:self.closedPanelsHistory
+                                                  panelsLocator:panels_locator];
+    (void)recently_closed_delegate;
 }
 
 - (void)updateMainMenuFeaturesByVersionAndState
@@ -310,7 +334,7 @@ static AppDelegate *g_Me = nil;
 {
     m_FinishedLaunching.toggle();
     
-    if( !m_IsRunningTests && m_MainWindows.empty() )
+    if( !m_IsRunningTests && self.mainWindowControllers.empty() )
         [self applicationOpenUntitledFile:NSApp]; // if there's no restored windows - we'll create a freshly new one
     
     NSApp.servicesProvider = self;
@@ -374,6 +398,11 @@ static AppDelegate *g_Me = nil;
         PFMoveToApplicationsFolderIfNecessary();
     
     ConfigWiring{GlobalConfig()}.Wire();
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(windowWillClose:)
+                                                 name:NSWindowWillCloseNotification
+                                               object:nil];
 }
 
 - (void) setupConfigs
@@ -411,47 +440,54 @@ static AppDelegate *g_Me = nil;
     return NO;
 }
 
-- (MainWindowController*)allocateDefaultMainWindow
++ (void)restoreWindowWithIdentifier:(NSString *)identifier
+                              state:(NSCoder *)state
+                  completionHandler:(void (^)(NSWindow *, NSError *))completionHandler
 {
-    MainWindowController *mwc = [[MainWindowController alloc] initDefaultWindow];
-    [mwc showWindow:self];
-    return mwc;
-}
+    if( NCAppDelegate.me.isRunningTests ) {
+        completionHandler(nil, nil);
+        return;
+    }
 
-- (MainWindowController*)allocateRestoredMainWindow
-{
-    MainWindowController *mwc;
-    if( MainWindowController.canRestoreDefaultWindowStateFromLastOpenedWindow )
-        mwc = [[MainWindowController alloc] initWithLastOpenedWindowOptions];
-    else if( GlobalConfig().GetBool(g_ConfigRestoreLastWindowState) )
-        mwc = [[MainWindowController alloc] initRestoringLastWindowFromConfig];
-    else
-        mwc = [[MainWindowController alloc] initDefaultWindow];
-    [mwc showWindow:self];
-    return mwc;
+    NSWindow *window = nil;
+    if( [identifier isEqualToString:NCMainWindow.defaultIdentifier] )
+        window = [g_Me allocateMainWindowRestoredBySystem].window;
+    completionHandler(window, nil);
 }
 
 - (IBAction)onMainMenuNewWindow:(id)sender
 {
-    [self allocateRestoredMainWindow];
+    auto ctrl = [self allocateMainWindowRestoredManually];
+    [ctrl showWindow:self];
 }
 
-- (void) addMainWindow:(MainWindowController*) _wnd
+- (void) addMainWindow:(NCMainWindowController*) _wnd
 {
     m_MainWindows.push_back(_wnd);
 }
 
-- (void) removeMainWindow:(MainWindowController*) _wnd
+- (void) removeMainWindow:(NCMainWindowController*) _wnd
 {
     auto it = find(begin(m_MainWindows), end(m_MainWindows), _wnd);
     if(it != end(m_MainWindows))
         m_MainWindows.erase(it);
 }
 
+- (void)windowWillClose:(NSNotification*)aNotification
+{
+    if( auto main_wnd = objc_cast<NCMainWindow>(aNotification.object) )
+        if( auto main_ctrl = objc_cast<NCMainWindowController>(main_wnd.delegate) ) {
+            dispatch_to_main_queue([=]{
+                [self removeMainWindow:main_ctrl];
+            });
+        }
+}
+
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
     bool has_running_ops = false;
-    for( const auto wincont: m_MainWindows )
+    auto controllers = self.mainWindowControllers;
+    for( const auto wincont: controllers )
         if( !wincont.operationsPool.Empty() ) {
             has_running_ops = true;
             break;
@@ -465,14 +501,15 @@ static AppDelegate *g_Me = nil;
         if( !AskToExitWithRunningOperations() )
             return NSTerminateCancel;
 
-        for( const auto wincont : m_MainWindows ) {
+        for( const auto wincont : controllers ) {
             wincont.operationsPool.StopAndWaitForShutdown();
             [wincont.terminalState terminate];
         }
     }
     
     // last cleanup before shutting down here:
-    self.favoriteLocationsStorage.StoreData( StateConfig(), "filePanel.favorites" );
+    if( m_Favorites  )
+        m_Favorites->StoreData( StateConfig(), "filePanel.favorites" );
     
     return NSTerminateNow;
 }
@@ -492,7 +529,7 @@ static AppDelegate *g_Me = nil;
     if( !m_FinishedLaunching || m_IsRunningTests )
         return false;
     
-    if( !m_MainWindows.empty() )
+    if( !self.mainWindowControllers.empty() )
         return true;
   
     [self onMainMenuNewWindow:sender];
@@ -500,36 +537,52 @@ static AppDelegate *g_Me = nil;
     return true;
 }
 
+
+- (bool) processLicenseFileActivation:(NSArray<NSString *> *)_filenames
+{
+    static const auto nc_license_extension = "."s + ActivationManager::LicenseFileExtension();
+    
+    if( _filenames.count != 1)
+        return false;
+    
+    for( NSString *pathstring in _filenames )
+        if( auto fs = pathstring.fileSystemRepresentationSafe ) {
+            if constexpr( ActivationManager::Type() == ActivationManager::Distribution::Trial ) {
+                if( _filenames.count == 1 && path(fs).extension() == nc_license_extension ) {
+                    string p = fs;
+                    dispatch_to_main_queue([=]{
+                        [self processProvidedLicenseFile:p];
+                    });
+                    return true;
+                }
+            }
+        }
+    return false;
+}
+
+- (void)drainFilesToOpen
+{
+    if( m_FilesToOpen.count == 0 )
+        return;
+    
+    if( ![self processLicenseFileActivation:m_FilesToOpen] )
+        self.servicesHandler.OpenFiles(m_FilesToOpen);
+
+    [m_FilesToOpen removeAllObjects];
+}
+
 - (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename
 {
-    [self application:sender openFiles:@[filename]];
+    [m_FilesToOpen addObjectsFromArray:@[filename]];
+    dispatch_to_main_queue_after(250ms, []{ [g_Me drainFilesToOpen]; });
     return true;
 }
 
 - (void)application:(NSApplication *)sender openFiles:(NSArray<NSString *> *)filenames
 {
-    static const auto nc_license_extension = "."s + ActivationManager::LicenseFileExtension();
-    
-    vector<string> paths;
-    for( NSString *pathstring in filenames )
-        if( auto fs = pathstring.fileSystemRepresentationSafe ) {
-            if constexpr( ActivationManager::Type() == ActivationManager::Distribution::Trial ) {
-                if( filenames.count == 1 && path(fs).extension() == nc_license_extension ) {
-                    string p = fs;
-                    dispatch_to_main_queue([=]{
-                        [self processProvidedLicenseFile:p];
-                    });
-                    return;
-                }
-            }
-            
-            // WTF Cocoa??
-            if( ![pathstring isEqualToString:@"YES"] )
-                paths.emplace_back( fs );
-        }
-    
-    if( !paths.empty() )
-        [self doRevealNativeItems:paths];
+    [m_FilesToOpen addObjectsFromArray:filenames];
+    dispatch_to_main_queue_after(250ms, []{ [g_Me drainFilesToOpen]; });
+    [NSApp replyToOpenOrPrint:NSApplicationDelegateReplySuccess];
 }
 
 - (void) processProvidedLicenseFile:(const string&)_path
@@ -566,67 +619,14 @@ static AppDelegate *g_Me = nil;
     [m_AppStoreHelper askUserToRestorePurchases];
 }
 
-- (void) doRevealNativeItems:(const vector<string>&)_paths
+- (void)openFolderService:(NSPasteboard *)pboard userData:(NSString *)data error:(__strong NSString **)error
 {
-    // TODO: need to implement handling muliple directory paths in the future
-    // grab first common directory and all corresponding items in it.
-    string directory;
-    vector<string> filenames;
-    for( auto &i:_paths ) {
-        path p = i;
-        
-        if( directory.empty() ) {
-            directory = p.filename() == "." ?
-                p.parent_path().parent_path().native() : // .../abra/cadabra/ -> .../abra/cadabra
-                p.parent_path().native();                // .../abra/cadabra  -> .../abra
-        }
-        
-        if( !i.empty() &&
-            i.front() == '/' &&
-            i.back() != '/' &&
-            i != "/"
-           )
-            filenames.emplace_back( path(i).filename().native() );
-    }
-    
-    if( filenames.empty() && directory.empty() )
-        return;
-
-    // find window to ask
-    MainWindowController *target_window = nil;
-    for( NSWindow *wnd in NSApplication.sharedApplication.orderedWindows )
-        if( auto *wc =  objc_cast<MainWindowController>(wnd.windowController) ) {
-            target_window = wc;
-            break;
-        }
-    
-    if( !target_window )
-        target_window = [self allocateDefaultMainWindow];
-
-    if( target_window ) {
-        [target_window.window makeKeyAndOrderFront:self];
-        [target_window.filePanelsState revealEntries:filenames inDirectory:directory];
-    }
+    self.servicesHandler.OpenFolder(pboard, data, error);
 }
 
-- (void)IClicked:(NSPasteboard *)pboard userData:(NSString *)data error:(__strong NSString **)error
+- (void)revealItemService:(NSPasteboard *)pboard userData:(NSString *)data error:(__strong NSString **)error
 {
-    // extract file paths
-    vector<string> paths;
-    for( NSPasteboardItem *item in pboard.pasteboardItems )
-        if( NSString *urlstring = [item stringForType:@"public.file-url"] ) {
-            if( NSURL *url = [NSURL URLWithString:urlstring] )
-                if( NSString *unixpath = url.path )
-                    if( auto fs = unixpath.fileSystemRepresentation  )
-                        paths.emplace_back( fs );
-        }
-        else if( NSString *path_string = [item stringForType:@"NSFilenamesPboardType"]  ) {
-            if( auto fs = path_string.fileSystemRepresentation  )
-                paths.emplace_back( fs );
-        }
-
-    if( !paths.empty() )
-        [self doRevealNativeItems:paths];
+    self.servicesHandler.RevealItem(pboard, data, error);
 }
 
 - (void)OnPreferencesCommand:(id)sender
@@ -690,10 +690,10 @@ static AppDelegate *g_Me = nil;
     return *i;
 }
 
-- (PanelViewLayoutsStorage&) panelLayouts
+- (const shared_ptr<nc::panel::PanelViewLayoutsStorage>&) panelLayouts
 {
-    static auto i = new PanelViewLayoutsStorage(g_ConfigLayoutsList);
-    return *i;
+    static auto i = make_shared<nc::panel::PanelViewLayoutsStorage>(g_ConfigLayoutsList);
+    return i;
 }
 
 - (ThemesManager&) themesManager
@@ -708,10 +708,16 @@ static AppDelegate *g_Me = nil;
     return *i;
 }
 
-- (FavoriteLocationsStorage&) favoriteLocationsStorage
+- (const shared_ptr<nc::panel::FavoriteLocationsStorage>&) favoriteLocationsStorage
 {
-    static auto i = new FavoriteLocationsStorage( StateConfig(), "filePanel.favorites" );
-    return *i;
+    static once_flag once;
+    call_once(once, [&]{
+        using t = nc::panel::FavoriteLocationsStorageImpl;
+        m_Favorites = make_shared<t>(StateConfig(), "filePanel.favorites");
+    });
+    
+    static const shared_ptr<nc::panel::FavoriteLocationsStorage> inst = m_Favorites;
+    return inst;
 }
 
 - (bool) askToResetDefaults
@@ -757,7 +763,7 @@ static AppDelegate *g_Me = nil;
     if( auto w = (VFSListWindowController*)existing_window  )
         [w show];
     else {
-        VFSListWindowController *window = [[VFSListWindowController alloc] init];
+        auto window = [[VFSListWindowController alloc] initWithVFSManager:self.vfsInstanceManager];
         [window show];
         existing_window = window;
     }
@@ -765,23 +771,38 @@ static AppDelegate *g_Me = nil;
 
 - (IBAction)onMainMenuPerformShowFavorites:(id)sender
 {
-  static __weak FavoritesWindowController *existing_window = nil;
-    if( auto w = (FavoritesWindowController*)existing_window  )
+    static __weak FavoritesWindowController *existing_window = nil;
+    if( auto w = (FavoritesWindowController*)existing_window  ) {
         [w show];
-    else {
-        auto storage = []()->FavoriteLocationsStorage& {
-            return AppDelegate.me.favoriteLocationsStorage;
-        };
-        FavoritesWindowController *window = [[FavoritesWindowController alloc]
-            initWithFavoritesStorage:storage];
-        [window show];
-        existing_window = window;
+        return ;
     }
+    auto storage = []()->nc::panel::FavoriteLocationsStorage& {
+        return *NCAppDelegate.me.favoriteLocationsStorage;
+    };
+    FavoritesWindowController *window = [[FavoritesWindowController alloc]
+                                         initWithFavoritesStorage:storage];
+    auto provide_panel = []() -> vector<pair<VFSHostPtr, string>> {
+        vector< pair<VFSHostPtr, string> > panel_paths;
+        for( const auto &ctr: NCAppDelegate.me.mainWindowControllers ) {
+            auto state = ctr.filePanelsState;
+            auto paths = state.filePanelsCurrentPaths;
+            for( const auto &p:paths )
+                panel_paths.emplace_back( get<1>(p), get<0>(p) );
+        }
+        return panel_paths;
+    };
+    window.provideCurrentUniformPaths = provide_panel;
+    
+    [window show];
+    existing_window = window;
 }
 
-- (NetworkConnectionsManager&)networkConnectionsManager
+- (const shared_ptr<NetworkConnectionsManager> &)networkConnectionsManager
 {
-    return ConfigBackedNetworkConnectionsManager::Instance();
+    static const auto mgr = make_shared<ConfigBackedNetworkConnectionsManager>
+        (self.configDirectory);
+    static const shared_ptr<NetworkConnectionsManager> int_ptr = mgr;
+    return int_ptr;
 }
 
 - (nc::ops::AggregateProgressTracker&) operationsProgressTracker
@@ -800,6 +821,47 @@ static AppDelegate *g_Me = nil;
 {
     static const auto instance = new nc::core::Dock;
     return *instance;
+}
+
+- (nc::core::VFSInstanceManager&)vfsInstanceManager
+{
+    static const auto instance = new nc::core::VFSInstanceManagerImpl;
+    return *instance;
+}
+
+- (const shared_ptr<nc::panel::ClosedPanelsHistory>&)closedPanelsHistory
+{
+    static const auto impl = make_shared<nc::panel::ClosedPanelsHistoryImpl>();
+    static const shared_ptr<nc::panel::ClosedPanelsHistory> history = impl;
+    return history;
+}
+
+- (NCMainWindowController*)windowForExternalRevealRequest
+{
+    NCMainWindowController *target_window = nil;
+    for( NSWindow *wnd in NSApplication.sharedApplication.orderedWindows )
+        if( auto wc =  objc_cast<NCMainWindowController>(wnd.windowController) )
+            if( [wc.topmostState isKindOfClass:MainWindowFilePanelState.class] ) {
+                target_window = wc;
+                break;
+            }
+    
+    if( !target_window )
+        target_window = [self allocateDefaultMainWindow];
+    
+    if( target_window )
+        [target_window.window makeKeyAndOrderFront:self];
+    
+    return target_window;
+}
+
+- (nc::core::ServicesHandler&)servicesHandler
+{
+    auto window_locator = []{
+        return [g_Me windowForExternalRevealRequest];
+    };
+    static nc::core::ServicesHandler handler(window_locator);
+    return handler;
 }
 
 @end

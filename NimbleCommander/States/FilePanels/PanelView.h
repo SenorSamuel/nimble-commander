@@ -1,16 +1,20 @@
-// Copyright (C) 2013-2017 Michael Kazakov. Subject to GNU General Public License version 3.
+// Copyright (C) 2013-2018 Michael Kazakov. Subject to GNU General Public License version 3.
 #pragma once
 
 #include <VFS/VFS.h>
 #include "PanelViewTypes.h"
 
 @protocol PanelViewDelegate;
+@protocol NCPanelViewKeystrokeSink;
 @class PanelView;
-struct PanelViewLayout;
+@class NCPanelViewHeader;
 
-namespace nc::panel::data {
-    struct ItemVolatileData;
-    struct Model;
+namespace nc::panel {
+    struct PanelViewLayout;
+    namespace data {
+        struct ItemVolatileData;
+        struct Model;
+    }
 }
 
 @interface PanelView : NSView<NSDraggingDestination>
@@ -27,8 +31,9 @@ namespace nc::panel::data {
 @property (nonatomic, readonly) NSString* headerTitle; // KVO-bound
 @property (nonatomic, readonly) int headerBarHeight;
 @property (nonatomic, readonly) NSProgressIndicator *busyIndicator;
+@property (nonatomic, readonly) NCPanelViewHeader *headerView;
 
-- (id)initWithFrame:(NSRect)frame layout:(const PanelViewLayout&)_layout;
+- (id)initWithFrame:(NSRect)frame layout:(const nc::panel::PanelViewLayout&)_layout;
 
 /**
  * called by controlled when a directory has been entirely changed in PanelData.
@@ -47,19 +52,8 @@ namespace nc::panel::data {
 
 - (void) volatileDataChanged;
 
-//- (void) modifierFlagsChanged:(unsigned long)_flags; // to know if shift or something else is pressed
-
-//- (rapidjson::StandaloneValue) encodeRestorableState;
-//- (void) loadRestorableState:(const rapidjson::StandaloneValue&)_state;
-
 - (void) savePathState;
 - (void) loadPathState;
-
-/**
- * _text can be nil.
- */
-- (void) setQuickSearchPrompt:(NSString*)_text withMatchesCount:(int)_count;
-
 
 /**
  * Configure and bring the popover to the screen.
@@ -77,7 +71,7 @@ namespace nc::panel::data {
 
 //PanelViewLayout
 - (any) presentationLayout;
-- (void) setPresentationLayout:(const PanelViewLayout&)_layout;
+- (void) setPresentationLayout:(const nc::panel::PanelViewLayout&)_layout;
 
 /*
  * PanelView implementation hooks.
@@ -95,5 +89,8 @@ namespace nc::panel::data {
 - (NSMenu *)panelItem:(int)_sorted_index menuForForEvent:(NSEvent*)_event;
 
 + (NSArray*) acceptedDragAndDropTypes;
+
+- (void)addKeystrokeSink:(id<NCPanelViewKeystrokeSink>)_sink withBasePriority:(int)_priority;
+- (void)removeKeystrokeSink:(id<NCPanelViewKeystrokeSink>)_sink;
 
 @end

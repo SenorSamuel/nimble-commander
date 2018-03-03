@@ -5,18 +5,24 @@
 #import <MMTabBarView/MMTabBarView.h>
 #include "../MainWindowStateProtocol.h"
 #include "../../Bootstrap/Config.h"
-
+#include "PanelViewKeystrokeSink.h"
 #include "PanelPreview.h"
+#include <Utility/MIMResponder.h>
 
 namespace nc::ops {
     class Pool;
 }
-namespace nc::panel::data {
-    class Model;
+
+namespace nc::panel {
+    class FavoriteLocationsStorage;
+    class ClosedPanelsHistory;
+    namespace data {
+        class Model;
+    }
 }
 
 class ExternalToolsStorage;
-@class MainWindowController;
+@class NCMainWindowController;
 @class Operation;
 @class PanelView;
 @class PanelController;
@@ -28,11 +34,16 @@ class ExternalToolsStorage;
 
 struct MainWindowFilePanelState_OverlappedTerminalSupport;
 
-@interface MainWindowFilePanelState : NSView<NCMainWindowState, MMTabBarViewDelegate>
+@interface MainWindowFilePanelState : NSView<NCMainWindowState,
+                                             NCPanelViewKeystrokeSink,
+                                             MMTabBarViewDelegate>
 {
+    function<PanelController*()> m_PanelFactory;
     vector<PanelController*> m_LeftPanelControllers;
     vector<PanelController*> m_RightPanelControllers;
     __weak PanelController*  m_LastFocusedPanelController;
+    
+    AttachedResponder *m_AttachedResponder;
     
     FilePanelMainSplitView *m_SplitView;
     NSLayoutConstraint     *m_MainSplitViewBottomConstraint;
@@ -47,17 +58,26 @@ struct MainWindowFilePanelState_OverlappedTerminalSupport;
     
     vector<GenericConfig::ObservationTicket> m_ConfigTickets;
     shared_ptr<nc::ops::Pool> m_OperationsPool;
+    shared_ptr<nc::panel::ClosedPanelsHistory> m_ClosedPanelsHistory;
+    shared_ptr<nc::panel::FavoriteLocationsStorage> m_FavoriteLocationsStorage;
 }
 
-@property (nonatomic, readonly) MainWindowController* mainWindowController;
+@property (nonatomic, readonly) NCMainWindowController* mainWindowController;
 @property (nonatomic, readonly) FilePanelMainSplitView *splitView;
 @property (nonatomic, readonly) ExternalToolsStorage &externalToolsStorage;
 @property (nonatomic, readonly) nc::ops::Pool& operationsPool;
 @property (nonatomic, readonly) bool isPanelActive;
 @property (nonatomic, readonly) bool goToForcesPanelActivation;
+@property (nonatomic, readwrite)
+    shared_ptr<nc::panel::ClosedPanelsHistory> closedPanelsHistory;
+@property (nonatomic, readwrite)
+    shared_ptr<nc::panel::FavoriteLocationsStorage> favoriteLocationsStorage;
+@property (nonatomic, readwrite) AttachedResponder *attachedResponder;
 
-- (instancetype) initDefaultFileStateWithFrame:(NSRect)frameRect andPool:(nc::ops::Pool&)_pool;
-- (instancetype) initEmptyFileStateWithFrame:(NSRect)frameRect andPool:(nc::ops::Pool&)_pool;
+- (instancetype) initWithFrame:(NSRect)frameRect
+                       andPool:(nc::ops::Pool&)_pool
+            loadDefaultContent:(bool)_load_content
+                  panelFactory:(function<PanelController*()>)_panel_factory;
 
 - (void) loadDefaultPanelContent;
 
@@ -75,7 +95,6 @@ struct MainWindowFilePanelState_OverlappedTerminalSupport;
  * Called by panel controller when it sucessfuly changes it's current path
  */
 - (void)PanelPathChanged:(PanelController*)_panel;
-- (void)revealEntries:(const vector<string>&)_filenames inDirectory:(const string&)_path;
 
 @property (nonatomic, readonly) vector< tuple<string,VFSHostPtr> > filePanelsCurrentPaths; // result may contain duplicates
 
@@ -116,14 +135,14 @@ struct MainWindowFilePanelState_OverlappedTerminalSupport;
  * May return nil in init/shutdown period or in invalid state.
  */
 @property (nonatomic, readonly) PanelController *leftPanelController;
-@property (nonatomic, readonly) vector<PanelController*> leftControllers;
+@property (nonatomic, readonly) const vector<PanelController*> &leftControllers;
 
 /**
  * Pick one of a controllers in right side tabbed bar, which is currently selected (regardless if it is active or not).
  * May return nil in init/shutdown period or in invalid state.
  */
 @property (nonatomic, readonly) PanelController *rightPanelController;
-@property (nonatomic, readonly) vector<PanelController*> rightControllers;
+@property (nonatomic, readonly) const vector<PanelController*> &rightControllers;
 
 /**
  * Checks if this controller is one of a state's left-side controllers set.
@@ -158,14 +177,11 @@ struct MainWindowFilePanelState_OverlappedTerminalSupport;
 
 - (void)addNewControllerOnLeftPane:(PanelController*)_pc;
 - (void)addNewControllerOnRightPane:(PanelController*)_pc;
+- (void)panelWillBeClosed:(PanelController*)_pc;
+
+- (void)attachPanel:(PanelController*)_pc; // +detach in the future
 
 
 @property (nonatomic) IBOutlet NSToolbar *filePanelsToolsbar;
 
 @end
-
-#import "MainWindowFilePanelState+Menu.h"
-#import "MainWindowFilePanelState+TabsSupport.h"
-#import "MainWindowFilePanelState+OverlappedTerminalSupport.h"
-#import "MainWindowFilePanelState+Tools.h"
-

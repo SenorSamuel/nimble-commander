@@ -1,9 +1,11 @@
 // Copyright (C) 2017 Michael Kazakov. Subject to GNU General Public License version 3.
 #include <NimbleCommander/Core/AnyHolder.h>
 #include "PanelDataPersistency.h"
-#include "PanelController+Menu.h"
+#include "PanelControllerActionsDispatcher.h"
 #include "Favorites.h"
 #include "FavoritesMenuDelegate.h"
+
+using namespace nc::panel;
 
 static NSMenuItem *BuildMenuItem( const FavoriteLocationsStorage::Favorite &_favorite )
 {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12120" systemVersion="17D47" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12120"/>
@@ -673,6 +673,17 @@ DQ
                                     </items>
                                 </menu>
                             </menuItem>
+                            <menuItem title="Recently Closed" id="zG7-ZH-wWc">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Recently Closed" id="6KN-gZ-Ha0">
+                                    <items>
+                                        <menuItem title="Restore Closed Tab" tag="14290" id="M7w-84-o0Y">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="Unk-De-Xat"/>
+                                    </items>
+                                </menu>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="Sda-qY-Ec2"/>
                             <menuItem title="Quick Lists" id="ToO-KH-35P">
                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -1045,7 +1056,11 @@ CQ
                 </menuItem>
             </items>
         </menu>
-        <customObject id="494" customClass="AppDelegate"/>
+        <customObject id="494" customClass="NCAppDelegate">
+            <connections>
+                <outlet property="recentlyClosedMenu" destination="6KN-gZ-Ha0" id="laZ-RT-yby"/>
+            </connections>
+        </customObject>
         <customObject id="420" customClass="NSFontManager"/>
         <customObject id="7FF-1A-0Ge" customClass="ToolsMenuDelegate"/>
     </objects>
