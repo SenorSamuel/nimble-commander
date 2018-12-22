@@ -4,11 +4,9 @@ This repository contains per-version snapshots of the project's source code.
 
 # How to Build
 **Prerequisites**  
-Xcode8, preferrebly Xcode8.3.2.  
-This version can be downloaded directly: https://download.developer.apple.com/Developer_Tools/Xcode_8.3.2/Xcode8.3.2.xip  
-_Xcode9 is not supported by the codebase due to the Objective-C++ compatibility issue, which appeared in Xcode9._
+Xcode10, preferrebly Xcode10.1.  
 
-Make sure that correct Xcode version is selected:
+Make sure that the correct Xcode version is selected:
 ```
 xcode-select -p
 ```
@@ -27,7 +25,7 @@ git clone --recursive https://github.com/mikekazakov/nimble-commander
 Use the following script to check if the build system works as expected:
 ```
 cd nimble-commander
-./build_unsigned_and_run.sh
+./Scripts/build_unsigned_and_run.sh
 ```
 If execution was successful, this script will run the freshly built version of Nimble Commander.  
 Location of resulting application bundle depends on current Xcode settings, by default it can be found here:  
@@ -36,12 +34,14 @@ Location of resulting application bundle depends on current Xcode settings, by d
 # Exploring the source code
 Just open NimbleCommander.xcodeproj in Xcode and select the proper scheme: NimbleCommander-Unsigned.  
 The source code is ready to be built and run.  
-There're 6 sub-projects in the codebase, apart from the main one:
+There're 8 sub-projects in the codebase, apart from the main one:
   * Habanero - low-level general-purpose facilities.
+  * Config - configuration facilities
   * Utility - Platform-dependent utilities.
   * RoutedIO - AdminMode-related code, including privileged helper and client-side interface.
   * Term - Built-in terminal emulator.
   * VFS - Virtual file systems: generic interface and various implementations.
+  * VFSIcon - Production of icons and thumbnails for VFS entries.
   * Operations - a set of file operations running on top of the VFS layer.
 
 # Limitations
@@ -50,5 +50,5 @@ However, the public repository does not contain any sensitive information like a
 Thus a few parts, which specifically rely on that information, might not work as expected.
 
 # License
-Copyright (C) 2013-2017 Michael Kazakov (mike.kazakov@gmail.com)  
+Copyright (C) 2013-2018 Michael Kazakov (mike.kazakov@gmail.com)  
 The source code is distributed under GNU General Public License version 3.
