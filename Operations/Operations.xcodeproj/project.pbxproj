@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		CF197C251FB4381E009F6C59 /* CopyingDialogDisclosedView.xib in Resources */ = {isa = PBXBuildFile; fileRef = CF197C271FB4381E009F6C59 /* CopyingDialogDisclosedView.xib */; };
+		CF238E1021A1948800569809 /* Helpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF238E0E21A1948800569809 /* Helpers.cpp */; };
+		CF238E1121A1948800569809 /* Helpers.h in Headers */ = {isa = PBXBuildFile; fileRef = CF238E0F21A1948800569809 /* Helpers.h */; };
 		CF36DBE91F6BF3FB004A018E /* Archive_Tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = CF36DBE71F6BF3C7004A018E /* Archive_Tests.mm */; };
 		CF4BCEE91F1D9CAA005F8414 /* CopyingJob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF4BCEE41F1D9CAA005F8414 /* CopyingJob.cpp */; };
 		CF4BCEEA1F1D9CAA005F8414 /* CopyingJob.h in Headers */ = {isa = PBXBuildFile; fileRef = CF4BCEE51F1D9CAA005F8414 /* CopyingJob.h */; };
@@ -36,6 +38,8 @@
 		CF4BCF5C1F301303005F8414 /* AggregateProgressTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = CF4BCF5A1F301303005F8414 /* AggregateProgressTracker.h */; };
 		CF4BCF5D1F301303005F8414 /* AggregateProgressTracker.mm in Sources */ = {isa = PBXBuildFile; fileRef = CF4BCF5B1F301303005F8414 /* AggregateProgressTracker.mm */; };
 		CF4BCF5F1F30130B005F8414 /* CopyingDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = CF4BCF5E1F30130B005F8414 /* CopyingDialog.h */; };
+		CF62B7C321B3D703009972DE /* debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = CF62B7C121B3D703009972DE /* debug.xcconfig */; };
+		CF62B7C421B3D703009972DE /* release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = CF62B7C221B3D703009972DE /* release.xcconfig */; };
 		CF7084D81EF7CC770072F0F6 /* Pool.h in Headers */ = {isa = PBXBuildFile; fileRef = CF7084D61EF7CC770072F0F6 /* Pool.h */; };
 		CF7084D91EF7CC770072F0F6 /* Pool.mm in Sources */ = {isa = PBXBuildFile; fileRef = CF7084D71EF7CC770072F0F6 /* Pool.mm */; };
 		CF7084DB1EF7CCB00072F0F6 /* Pool.h in Headers */ = {isa = PBXBuildFile; fileRef = CF7084DA1EF7CCB00072F0F6 /* Pool.h */; };
@@ -140,6 +144,7 @@
 		CFC4F9D71F14FA100000B3EE /* AttrsChanging_Tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = CFC4F9D51F14F9FE0000B3EE /* AttrsChanging_Tests.mm */; };
 		CFC4F9E91F15BA800000B3EE /* AttrsChangingDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = CFC4F9E61F15BA800000B3EE /* AttrsChangingDialog.h */; };
 		CFC4F9EA1F15BA800000B3EE /* AttrsChangingDialog.mm in Sources */ = {isa = PBXBuildFile; fileRef = CFC4F9E71F15BA800000B3EE /* AttrsChangingDialog.mm */; };
+		CFDE7170215269AE005449C8 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = CFDE716E215267BB005449C8 /* libiconv.tbd */; };
 		CFF53B391EDD197300F567C4 /* Operations.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFF53B2F1EDD197300F567C4 /* Operations.framework */; };
 		CFF53B761EDE53E800F567C4 /* Operation.h in Headers */ = {isa = PBXBuildFile; fileRef = CFF53B741EDE53E800F567C4 /* Operation.h */; };
 		CFF53B771EDE53E800F567C4 /* Operation.mm in Sources */ = {isa = PBXBuildFile; fileRef = CFF53B751EDE53E800F567C4 /* Operation.mm */; };
@@ -170,6 +175,8 @@
 /* Begin PBXFileReference section */
 		CF197C261FB4381E009F6C59 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/CopyingDialogDisclosedView.xib; sourceTree = "<group>"; };
 		CF197C291FB43825009F6C59 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/CopyingDialogDisclosedView.strings; sourceTree = "<group>"; };
+		CF238E0E21A1948800569809 /* Helpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Helpers.cpp; path = source/Copying/Helpers.cpp; sourceTree = "<group>"; };
+		CF238E0F21A1948800569809 /* Helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Helpers.h; path = source/Copying/Helpers.h; sourceTree = "<group>"; };
 		CF36DBE71F6BF3C7004A018E /* Archive_Tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Archive_Tests.mm; path = tests/Archive_Tests.mm; sourceTree = SOURCE_ROOT; };
 		CF4BCEE41F1D9CAA005F8414 /* CopyingJob.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CopyingJob.cpp; path = source/Copying/CopyingJob.cpp; sourceTree = "<group>"; };
 		CF4BCEE51F1D9CAA005F8414 /* CopyingJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CopyingJob.h; path = source/Copying/CopyingJob.h; sourceTree = "<group>"; };
@@ -200,7 +207,9 @@
 		CF4BCF5A1F301303005F8414 /* AggregateProgressTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AggregateProgressTracker.h; path = source/AggregateProgressTracker.h; sourceTree = "<group>"; };
 		CF4BCF5B1F301303005F8414 /* AggregateProgressTracker.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AggregateProgressTracker.mm; path = source/AggregateProgressTracker.mm; sourceTree = "<group>"; };
 		CF4BCF5E1F30130B005F8414 /* CopyingDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CopyingDialog.h; path = include/Operations/CopyingDialog.h; sourceTree = "<group>"; };
-		CF5FD93E1FA2D3B400752E59 /* config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = config.xcconfig; path = config/config.xcconfig; sourceTree = "<group>"; wrapsLines = 1; };
+		CF5FD93E1FA2D3B400752E59 /* default.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = default.xcconfig; path = config/default.xcconfig; sourceTree = "<group>"; wrapsLines = 1; };
+		CF62B7C121B3D703009972DE /* debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = config/debug.xcconfig; sourceTree = "<group>"; };
+		CF62B7C221B3D703009972DE /* release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = release.xcconfig; path = config/release.xcconfig; sourceTree = "<group>"; };
 		CF7084D61EF7CC770072F0F6 /* Pool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pool.h; path = source/Pool.h; sourceTree = "<group>"; };
 		CF7084D71EF7CC770072F0F6 /* Pool.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Pool.mm; path = source/Pool.mm; sourceTree = "<group>"; };
 		CF7084DA1EF7CCB00072F0F6 /* Pool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pool.h; path = include/Operations/Pool.h; sourceTree = "<group>"; };
@@ -310,6 +319,7 @@
 		CFC4F9D51F14F9FE0000B3EE /* AttrsChanging_Tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AttrsChanging_Tests.mm; path = tests/AttrsChanging_Tests.mm; sourceTree = SOURCE_ROOT; };
 		CFC4F9E61F15BA800000B3EE /* AttrsChangingDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AttrsChangingDialog.h; path = source/AttrsChanging/AttrsChangingDialog.h; sourceTree = "<group>"; };
 		CFC4F9E71F15BA800000B3EE /* AttrsChangingDialog.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AttrsChangingDialog.mm; path = source/AttrsChanging/AttrsChangingDialog.mm; sourceTree = "<group>"; };
+		CFDE716E215267BB005449C8 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		CFF53B2F1EDD197300F567C4 /* Operations.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Operations.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFF53B331EDD197300F567C4 /* Info-Framework.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Info-Framework.plist"; path = "resources/Info-Framework.plist"; sourceTree = "<group>"; };
 		CFF53B381EDD197300F567C4 /* OperationsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OperationsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -336,8 +346,8 @@
 		CFFA95441F4C17CC0035E606 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = "ru.lproj/Info-TestsPlist.strings"; sourceTree = "<group>"; };
 		CFFA95461F4C17CD0035E606 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/AttrsChangingDialog.strings; sourceTree = "<group>"; };
 		CFFA954A1F4C17CD0035E606 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = "ru.lproj/Info-FrameworkPlist.strings"; sourceTree = "<group>"; };
-		CFFA954F1F4C17CE0035E606 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
-		CFFA95511F4C18160035E606 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
+		CFFA954F1F4C17CE0035E606 /* ru */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		CFFA95511F4C18160035E606 /* Base */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -345,6 +355,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CFDE7170215269AE005449C8 /* libiconv.tbd in Frameworks */,
 				CFBEF90A1F67F0AF00C63816 /* libVFS.dylib in Frameworks */,
 				CFBEF9021F67E56A00C63816 /* libHabanero.dylib in Frameworks */,
 				CFBEF9031F67E56A00C63816 /* libRoutedIO.dylib in Frameworks */,
@@ -366,8 +377,6 @@
 		CF4BCEE21F1D9C9A005F8414 /* Copying */ = {
 			isa = PBXGroup;
 			children = (
-				CFAAF0721FA9D8B8009230B3 /* CopyingTitleBuilder.h */,
-				CFAAF0731FA9D8B8009230B3 /* CopyingTitleBuilder.mm */,
 				CF4BCF3D1F29A326005F8414 /* ChecksumExpectation.cpp */,
 				CF4BCF3E1F29A326005F8414 /* ChecksumExpectation.h */,
 				CF4BCEED1F1DA207005F8414 /* Copying.h */,
@@ -378,11 +387,15 @@
 				CF197C271FB4381E009F6C59 /* CopyingDialogDisclosedView.xib */,
 				CF4BCEE41F1D9CAA005F8414 /* CopyingJob.cpp */,
 				CF4BCEE51F1D9CAA005F8414 /* CopyingJob.h */,
+				CFAAF0721FA9D8B8009230B3 /* CopyingTitleBuilder.h */,
+				CFAAF0731FA9D8B8009230B3 /* CopyingTitleBuilder.mm */,
 				CF4BCF561F2F1508005F8414 /* DisclosureViewController.h */,
 				CF4BCF571F2F1508005F8414 /* DisclosureViewController.m */,
 				CF4BCF0A1F1EF579005F8414 /* FileAlreadyExistDialog.h */,
 				CF4BCF0B1F1EF579005F8414 /* FileAlreadyExistDialog.mm */,
 				CF4BCF081F1EF579005F8414 /* FileAlreadyExistDialog.xib */,
+				CF238E0E21A1948800569809 /* Helpers.cpp */,
+				CF238E0F21A1948800569809 /* Helpers.h */,
 				CF4BCF001F1EEFCE005F8414 /* NativeFSHelpers.cpp */,
 				CF4BCF011F1EEFCE005F8414 /* NativeFSHelpers.h */,
 				CF4BCEE71F1D9CAA005F8414 /* Options.h */,
@@ -395,7 +408,9 @@
 		CF5FD93D1FA2D39F00752E59 /* Config */ = {
 			isa = PBXGroup;
 			children = (
-				CF5FD93E1FA2D3B400752E59 /* config.xcconfig */,
+				CF62B7C121B3D703009972DE /* debug.xcconfig */,
+				CF62B7C221B3D703009972DE /* release.xcconfig */,
+				CF5FD93E1FA2D3B400752E59 /* default.xcconfig */,
 			);
 			name = Config;
 			sourceTree = "<group>";
@@ -591,12 +606,13 @@
 				CFC4F9981F0F271E0000B3EE /* Linkage_Tests.mm */,
 			);
 			name = Tests;
-			path = OperationsTests;
-			sourceTree = "<group>";
+			path = tests;
+			sourceTree = SOURCE_ROOT;
 		};
 		CFF53B711EDD401900F567C4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CFDE716E215267BB005449C8 /* libiconv.tbd */,
 				CFBEF9061F67E56A00C63816 /* libHabanero.dylib */,
 				CFBEF9071F67E56A00C63816 /* libRoutedIO.dylib */,
 				CFBEF9081F67E56A00C63816 /* libUtility.dylib */,
@@ -685,6 +701,7 @@
 				CFC4F8D01EFA07F00000B3EE /* PoolViewController.h in Headers */,
 				CFC4F9511F0CA84D0000B3EE /* DirectoryCreationDialog.h in Headers */,
 				CF4BCF5C1F301303005F8414 /* AggregateProgressTracker.h in Headers */,
+				CF238E1121A1948800569809 /* Helpers.h in Headers */,
 				CFC4F8D71EFB5F780000B3EE /* BriefOperationViewController.h in Headers */,
 				CFF53BAE1EEA840600F567C4 /* Statistics.h in Headers */,
 				CFC4F8F31F0243D30000B3EE /* GenericErrorDialog.h in Headers */,
@@ -780,7 +797,7 @@
 		CFF53B261EDD197300F567C4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0830;
+				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = "Michael G. Kazakov";
 				TargetAttributes = {
 					CFF53B2E1EDD197300F567C4 = {
@@ -826,6 +843,8 @@
 				CFFA954E1F4C17CE0035E606 /* Localizable.strings in Resources */,
 				CFC4F8DA1EFB5FAB0000B3EE /* BriefOperationViewController.xib in Resources */,
 				CFC4F8F51F0243D30000B3EE /* GenericErrorDialog.xib in Resources */,
+				CF62B7C321B3D703009972DE /* debug.xcconfig in Resources */,
+				CF62B7C421B3D703009972DE /* release.xcconfig in Resources */,
 				CFC4F8E01EFCD9A50000B3EE /* Media.xcassets in Resources */,
 				CFC4F9C11F108CD60000B3EE /* AlterSymlinkDialog.xib in Resources */,
 				CFC4F97D1F0DEC280000B3EE /* BatchRenamingDialog.xib in Resources */,
@@ -870,6 +889,7 @@
 				CFC4F95E1F0CB07A0000B3EE /* DeletionDialog.mm in Sources */,
 				CF4BCF531F2F07DB005F8414 /* CopyingDialog.mm in Sources */,
 				CFC4F9D31F14C4030000B3EE /* AttrsChangingJob.cpp in Sources */,
+				CF238E1021A1948800569809 /* Helpers.cpp in Sources */,
 				CF4BCF021F1EEFCE005F8414 /* NativeFSHelpers.cpp in Sources */,
 				CFC4F9801F0DEC280000B3EE /* BatchRenamingDialog.mm in Sources */,
 				CF7084D91EF7CC770072F0F6 /* Pool.mm in Sources */,
@@ -1064,196 +1084,15 @@
 /* Begin XCBuildConfiguration section */
 		CFF53B411EDD197300F567C4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CF5FD93E1FA2D3B400752E59 /* config.xcconfig */;
+			baseConfigurationReference = CF62B7C121B3D703009972DE /* debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = NO;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "source/Operations-prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/../3rd_Party/libarchive/built",
-					"$(PROJECT_DIR)/../3rd_Party/boost/built",
-					"$(PROJECT_DIR)/../3rd_Party/OpenSSL/built",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(OTHER_CFLAGS)",
-					"-std=c++1z",
-				);
-				OTHER_LDFLAGS = (
-					"-larchive",
-					"-lboost_system-mt",
-					"-lboost_filesystem-mt",
-					"-lz",
-					"-lssl",
-					"-lcrypto",
-					"-llzma",
-					"-lbz2",
-					"-framework",
-					AppKit,
-					"-framework",
-					DiskArbitration,
-					"-framework",
-					Foundation,
-					"-framework",
-					SystemConfiguration,
-					"-framework",
-					ServiceManagement,
-					"-framework",
-					Security,
-					"-framework",
-					Cocoa,
-					"-framework",
-					OpenDirectory,
-					"-framework",
-					QuartzCore,
-					"-framework",
-					IOKit,
-					"-lVFS",
-				);
-				SDKROOT = macosx;
-				STRIP_INSTALLED_PRODUCT = NO;
-				USE_HEADERMAP = NO;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
 		};
 		CFF53B421EDD197300F567C4 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CF5FD93E1FA2D3B400752E59 /* config.xcconfig */;
+			baseConfigurationReference = CF62B7C221B3D703009972DE /* release.xcconfig */;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = NO;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "source/Operations-prefix.pch";
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/../3rd_Party/libarchive/built",
-					"$(PROJECT_DIR)/../3rd_Party/boost/built",
-					"$(PROJECT_DIR)/../3rd_Party/OpenSSL/built",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(OTHER_CFLAGS)",
-					"-std=c++1z",
-				);
-				OTHER_LDFLAGS = (
-					"-larchive",
-					"-lboost_system-mt",
-					"-lboost_filesystem-mt",
-					"-lz",
-					"-lssl",
-					"-lcrypto",
-					"-llzma",
-					"-lbz2",
-					"-framework",
-					AppKit,
-					"-framework",
-					DiskArbitration,
-					"-framework",
-					Foundation,
-					"-framework",
-					SystemConfiguration,
-					"-framework",
-					ServiceManagement,
-					"-framework",
-					Security,
-					"-framework",
-					Cocoa,
-					"-framework",
-					OpenDirectory,
-					"-framework",
-					QuartzCore,
-					"-framework",
-					IOKit,
-					"-lVFS",
-				);
-				SDKROOT = macosx;
-				STRIP_INSTALLED_PRODUCT = NO;
-				USE_HEADERMAP = NO;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
 		};

@@ -1,11 +1,15 @@
-// Copyright (C) 2014-2017 Michael Kazakov. Subject to GNU General Public License version 3.
+// Copyright (C) 2014-2018 Michael Kazakov. Subject to GNU General Public License version 3.
 #include <Habanero/CommonPaths.h>
+#include <Habanero/dispatch_cpp.h>
 #import <XCTest/XCTest.h>
 #include "ShellTask.h"
 #include "Screen.h"
 #include "Parser.h"
 
 using namespace nc::term;
+
+using namespace std;
+using namespace std::chrono;
 
 static void testSleep(microseconds _us)
 {
