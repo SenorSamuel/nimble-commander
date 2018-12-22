@@ -24,8 +24,8 @@ git clone --recursive https://github.com/mikekazakov/nimble-commander
 **Building an unsigned version**  
 Use the following script to check if the build system works as expected:
 ```
-cd nimble-commander
-./Scripts/build_unsigned_and_run.sh
+cd nimble-commander/Scripts
+./build_unsigned_and_run.sh
 ```
 If execution was successful, this script will run the freshly built version of Nimble Commander.  
 Location of resulting application bundle depends on current Xcode settings, by default it can be found here:  
