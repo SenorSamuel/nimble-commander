@@ -1,10 +1,12 @@
-// Copyright (C) 2014-2017 Michael Kazakov. Subject to GNU General Public License version 3.
+// Copyright (C) 2014-2018 Michael Kazakov. Subject to GNU General Public License version 3.
 #include "tests_common.h"
 #include <VFS/VFS.h>
 #include <VFS/ArcLA.h>
 #include <VFS/Native.h>
 
 using namespace nc::vfs;
+using namespace std;
+using boost::filesystem::path;
 
 static const auto g_Preffix = string(NCE(nc::env::test::ext_data_prefix)) + "archives/";
 static const auto g_XNU   = g_Preffix + "xnu-2050.18.24.tar";
@@ -18,6 +20,8 @@ static const auto g_WarningArchive = g_Preffix + "maverix-master.zip";
 static const auto g_ChineseArchive = g_Preffix + "GB18030.zip";
 static const auto g_HeadingSlash = g_Preffix + "the.expanse.calibans.war.(2017).tv.s02.e13.eng.1cd.zip";
 static const auto g_SlashDir = g_Preffix + "archive_with_slash_dir.zip";
+static const auto g_GDriveDownload = g_Preffix + "gdrive_encoding.zip";
+
 
 static int VFSCompareEntries(const path& _file1_full_path,
                              const VFSHostPtr& _file1_host,
@@ -376,6 +380,28 @@ static int VFSCompareEntries(const path& _file1_full_path,
     XCTAssert( host->FetchDirectoryListing("/", listing, 0, nullptr) == VFSError::Ok );
 }
 
+- (void)testGDriveArchivesAreProperlyDecoded
+{
+    shared_ptr<ArchiveHost> host;
+    try {
+        host = make_shared<ArchiveHost>(g_GDriveDownload.c_str(), VFSNativeHost::SharedHost());
+    } catch (VFSErrorException &e) {
+        XCTAssert( e.code() == 0 );
+        return;
+    }
+    
+    VFSFilePtr file;    
+    XCTAssert( host->CreateFile(@"/тест.txt".UTF8String, file, 0) == 0 );
+    XCTAssert( file->Open( VFSFlags::OF_Read ) == 0 );
+    
+    auto d = file->ReadFile();
+    XCTAssert( d->size() == 9 );
+    auto ref = @"Тест!".UTF8String;
+    XCTAssert( memcmp(d->data(), ref, strlen(ref) ) == 0 );
+    file.reset();
+    
+}
+
 - (path)makeTmpDir
 {
     char dir[MAXPATHLEN];
@@ -386,6 +412,7 @@ static int VFSCompareEntries(const path& _file1_full_path,
 
 - (void) waitUntilFinish:(volatile bool&)_finished
 {
+    using namespace std::chrono;
     microseconds sleeped = 0us, sleep_tresh = 60s;
     while (!_finished)
     {
