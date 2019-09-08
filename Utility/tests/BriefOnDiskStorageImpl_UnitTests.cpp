@@ -1,3 +1,4 @@
+// Copyright (C) 2019 Michael Kazakov. Subject to GNU General Public License version 3.
 #include "BriefOnDiskStorageImpl.h"
 #include <Habanero/PosixFilesystemMock.h>
 #include "UnitTests_main.h"
@@ -18,7 +19,7 @@ TEST_CASE("BriefOnDiskStorageImpl writes the entire file")
     
     nc::hbn::PosixFilesystemMock fs;
     EXPECT_CALL(fs, mkstemp(Eq(expected_pattern)))
-        .WillOnce(Invoke([fake_path, fake_fd](char*p){
+    .WillOnce(Invoke([fake_path](char*p){
             strcpy(p, fake_path.c_str());
             return fake_fd;
         }));

@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2018 Michael Kazakov. Subject to GNU General Public License version 3.
+// Copyright (C) 2014-2019 Michael Kazakov. Subject to GNU General Public License version 3.
 #include "tests_common.h"
 #include <VFS/NetSFTP.h>
 #include <Habanero/dispatch_cpp.h>
@@ -205,6 +205,25 @@ static const auto g_VBoxUbuntu1404x64KeyPasswd  = NCE(nc::env::test::sftp_vbox_u
         XCTAssert( e.code() == 0 );
     }
 
+    try { // auth with encrypted private key / RSA4096
+        auto host = make_shared<SFTPHost>(g_VBoxUbuntu1404x64,
+                                          g_VBoxUbuntu1404x64User,
+                                          g_VBoxUbuntu1404x64KeyPasswd,
+                                          (g_Keys/"id_rsa_ubuntu1404x64_local_r2d2_qwerty_4096").c_str());
+    XCTAssert( host->HomeDir() == "/home/r2d2" );
+    } catch (VFSErrorException &e) {
+        XCTAssert( e.code() == 0 );
+    }
+
+    try { // auth with encrypted private key / ECDSA
+        auto host = make_shared<SFTPHost>(g_VBoxUbuntu1404x64,
+                                          g_VBoxUbuntu1404x64User,
+                                          g_VBoxUbuntu1404x64KeyPasswd,
+                                          (g_Keys/"id_ecdsa_ubuntu1404x64_local_r2d2_qwerty").c_str());
+    XCTAssert( host->HomeDir() == "/home/r2d2" );
+    } catch (VFSErrorException &e) {
+        XCTAssert( e.code() == 0 );
+    }
     
     try { // auth with login-password pair
         auto host = make_shared<SFTPHost>(g_VBoxUbuntu1404x64,
@@ -348,5 +367,25 @@ static const auto g_VBoxUbuntu1404x64KeyPasswd  = NCE(nc::env::test::sftp_vbox_u
     }
 }
 
+// I had a weird behavior of ssh, which return a permission error when reading past end-of-file.
+// That behvaiour occured in VFSSeqToRandomWrapper
+- (void)testRandomWrapper
+{
+    try { // auth with encrypted private key / ECDSA
+        auto host = make_shared<SFTPHost>(g_VBoxUbuntu1404x64,
+                                          g_VBoxUbuntu1404x64User,
+                                          g_VBoxUbuntu1404x64KeyPasswd,
+                                          (g_Keys/"id_ecdsa_ubuntu1404x64_local_r2d2_qwerty").c_str());
+                                          
+        VFSFilePtr seq_file;
+        XCTAssert( host->CreateFile( (host->HomeDir() + "/.ssh/authorized_keys").c_str(), seq_file, 0) == VFSError::Ok);
+        
+        auto wrapper = std::make_shared<VFSSeqToRandomROWrapperFile>(seq_file);
+        XCTAssert( wrapper->Open(VFSFlags::OF_Read | VFSFlags::OF_ShLock, nullptr, nullptr) == VFSError::Ok );
+                                          
+    } catch (VFSErrorException &e) {
+        XCTAssert( e.code() == 0 );
+    }
+}
 
 @end
