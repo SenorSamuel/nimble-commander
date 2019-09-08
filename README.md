@@ -4,7 +4,7 @@ This repository contains per-version snapshots of the project's source code.
 
 # How to Build
 **Prerequisites**  
-Xcode10, preferrebly Xcode10.1.  
+Xcode10, preferrebly Xcode10.2.1.  
 
 Make sure that the correct Xcode version is selected:
 ```
@@ -34,14 +34,16 @@ Location of resulting application bundle depends on current Xcode settings, by d
 # Exploring the source code
 Just open NimbleCommander.xcodeproj in Xcode and select the proper scheme: NimbleCommander-Unsigned.  
 The source code is ready to be built and run.  
-There're 8 sub-projects in the codebase, apart from the main one:
+There're 10 sub-projects in the codebase, apart from the main one:
   * Habanero - low-level general-purpose facilities.
-  * Config - configuration facilities
-  * Utility - Platform-dependent utilities.
+  * Config - configuration facilities.
+  * CUI - common UI compontents.
+  * Utility - platform-dependent utilities.
   * RoutedIO - AdminMode-related code, including privileged helper and client-side interface.
-  * Term - Built-in terminal emulator.
-  * VFS - Virtual file systems: generic interface and various implementations.
-  * VFSIcon - Production of icons and thumbnails for VFS entries.
+  * Term - built-in terminal emulator.
+  * VFS - virtual file systems: generic interface and various implementations.
+  * VFSIcon - production of icons and thumbnails for VFS entries.
+  * Viewer - built-in viewer.
   * Operations - a set of file operations running on top of the VFS layer.
 
 # Limitations
@@ -50,5 +52,5 @@ However, the public repository does not contain any sensitive information like a
 Thus a few parts, which specifically rely on that information, might not work as expected.
 
 # License
-Copyright (C) 2013-2018 Michael Kazakov (mike.kazakov@gmail.com)  
+Copyright (C) 2013-2019 Michael Kazakov (mike.kazakov@gmail.com)  
 The source code is distributed under GNU General Public License version 3.

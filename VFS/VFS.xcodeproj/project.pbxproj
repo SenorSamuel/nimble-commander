@@ -19,6 +19,22 @@
 		CF1FDD041F5BBA6F00AF1EBD /* WriteBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1FDD021F5BBA6F00AF1EBD /* WriteBuffer.cpp */; };
 		CF1FDD071F5D4AEC00AF1EBD /* PathRoutines.h in Headers */ = {isa = PBXBuildFile; fileRef = CF1FDD051F5D4AEC00AF1EBD /* PathRoutines.h */; };
 		CF1FDD081F5D4AEC00AF1EBD /* PathRoutines.mm in Sources */ = {isa = PBXBuildFile; fileRef = CF1FDD061F5D4AEC00AF1EBD /* PathRoutines.mm */; };
+		CF2343EF22CD321300F516CB /* KeyValidator_UT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF2343EE22CD321300F516CB /* KeyValidator_UT.cpp */; };
+		CF24E1FA22901C6800C166FA /* SearchForFiles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF24E1F922901C6800C166FA /* SearchForFiles.cpp */; };
+		CF24E1FC22901C7800C166FA /* SearchForFiles.h in Headers */ = {isa = PBXBuildFile; fileRef = CF24E1FB22901C7800C166FA /* SearchForFiles.h */; };
+		CF24E1FF2290200800C166FA /* SearchForFiles_IT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF24E1FD2290200400C166FA /* SearchForFiles_IT.cpp */; };
+		CF26DE0921CFA2AE003F0E93 /* NetWebDAV.h in Headers */ = {isa = PBXBuildFile; fileRef = CF26DE0621CFA2AD003F0E93 /* NetWebDAV.h */; };
+		CF26DE0A21CFA2AE003F0E93 /* VFS_fwd.h in Headers */ = {isa = PBXBuildFile; fileRef = CF26DE0721CFA2AE003F0E93 /* VFS_fwd.h */; };
+		CF26DE0B21CFA2AE003F0E93 /* FileWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = CF26DE0821CFA2AE003F0E93 /* FileWindow.h */; };
+		CF26DE0D21CFA2C0003F0E93 /* FileWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF26DE0C21CFA2BF003F0E93 /* FileWindow.cpp */; };
+		CF26DE0F21CFA2CC003F0E93 /* FileWindow_Tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = CF26DE0E21CFA2CC003F0E93 /* FileWindow_Tests.mm */; };
+		CF26DE1321D26B07003F0E93 /* SearchInFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF26DE1121D266EA003F0E93 /* SearchInFile.cpp */; };
+		CF26DE2121D2864D003F0E93 /* Tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF26DE2021D2864D003F0E93 /* Tests.cpp */; };
+		CF26DE2421D28754003F0E93 /* SearchInFile_UT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF26DE2321D28754003F0E93 /* SearchInFile_UT.cpp */; };
+		CF26DE2521D2A260003F0E93 /* libHabanero.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CFFA94E71F4544FB0035E606 /* libHabanero.dylib */; };
+		CF26DE2621D2A265003F0E93 /* libVFS.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CFFA94AF1F4543840035E606 /* libVFS.dylib */; };
+		CF26DE2721D2A268003F0E93 /* libUtility.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CFFA94E51F4544F90035E606 /* libUtility.dylib */; };
+		CF26DE3621E297AE003F0E93 /* EasyOps_UT.mm in Sources */ = {isa = PBXBuildFile; fileRef = CF26DE3521E297AE003F0E93 /* EasyOps_UT.mm */; };
 		CF3E2F861F60DF08001BFFCE /* Requests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF3E2F841F60DF08001BFFCE /* Requests.cpp */; };
 		CF3E2F871F60DF08001BFFCE /* Requests.h in Headers */ = {isa = PBXBuildFile; fileRef = CF3E2F851F60DF08001BFFCE /* Requests.h */; };
 		CF5099951F95C881000AFDE7 /* EncodingDetection.h in Headers */ = {isa = PBXBuildFile; fileRef = CF5099931F95C881000AFDE7 /* EncodingDetection.h */; };
@@ -94,6 +110,18 @@
 		CFFA95701F5A57030035E606 /* ReadBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CFFA956E1F5A4EDC0035E606 /* ReadBuffer.cpp */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		CF26DE1621D285A6003F0E93 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		CF11687A1E91FA9200CC515A /* NetDropbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NetDropbox.h; path = include/VFS/NetDropbox.h; sourceTree = "<group>"; };
 		CF11687D1E91FAAA00CC515A /* Host.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Host.h; path = source/NetDropbox/Host.h; sourceTree = "<group>"; };
@@ -128,6 +156,23 @@
 		CF22A1111E9751A800149C44 /* FileUploadStream.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = FileUploadStream.mm; path = source/NetDropbox/FileUploadStream.mm; sourceTree = "<group>"; };
 		CF22A1141E97755000149C44 /* FileUploadDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileUploadDelegate.h; path = source/NetDropbox/FileUploadDelegate.h; sourceTree = "<group>"; };
 		CF22A1151E97755000149C44 /* FileUploadDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = FileUploadDelegate.mm; path = source/NetDropbox/FileUploadDelegate.mm; sourceTree = "<group>"; };
+		CF2343EE22CD321300F516CB /* KeyValidator_UT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyValidator_UT.cpp; path = tests/NetSFTP/KeyValidator_UT.cpp; sourceTree = SOURCE_ROOT; };
+		CF24E1F922901C6800C166FA /* SearchForFiles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SearchForFiles.cpp; path = source/SearchForFiles.cpp; sourceTree = "<group>"; };
+		CF24E1FB22901C7800C166FA /* SearchForFiles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SearchForFiles.h; path = include/VFS/SearchForFiles.h; sourceTree = "<group>"; };
+		CF24E1FD2290200400C166FA /* SearchForFiles_IT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SearchForFiles_IT.cpp; path = tests/SearchForFiles_IT.cpp; sourceTree = SOURCE_ROOT; };
+		CF26DE0621CFA2AD003F0E93 /* NetWebDAV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NetWebDAV.h; path = include/VFS/NetWebDAV.h; sourceTree = "<group>"; };
+		CF26DE0721CFA2AE003F0E93 /* VFS_fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VFS_fwd.h; path = include/VFS/VFS_fwd.h; sourceTree = "<group>"; };
+		CF26DE0821CFA2AE003F0E93 /* FileWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileWindow.h; path = include/VFS/FileWindow.h; sourceTree = "<group>"; };
+		CF26DE0C21CFA2BF003F0E93 /* FileWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileWindow.cpp; path = source/FileWindow.cpp; sourceTree = "<group>"; };
+		CF26DE0E21CFA2CC003F0E93 /* FileWindow_Tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = FileWindow_Tests.mm; path = tests/FileWindow_Tests.mm; sourceTree = SOURCE_ROOT; };
+		CF26DE1021D266E0003F0E93 /* SearchInFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SearchInFile.h; path = include/VFS/SearchInFile.h; sourceTree = "<group>"; };
+		CF26DE1121D266EA003F0E93 /* SearchInFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SearchInFile.cpp; path = source/SearchInFile.cpp; sourceTree = "<group>"; };
+		CF26DE1821D285A6003F0E93 /* libVFSUT */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = libVFSUT; sourceTree = BUILT_PRODUCTS_DIR; };
+		CF26DE1F21D2864D003F0E93 /* Tests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Tests.h; path = tests/Tests.h; sourceTree = SOURCE_ROOT; };
+		CF26DE2021D2864D003F0E93 /* Tests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Tests.cpp; path = tests/Tests.cpp; sourceTree = SOURCE_ROOT; };
+		CF26DE2221D28699003F0E93 /* tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = tests.xcconfig; path = config/tests.xcconfig; sourceTree = "<group>"; wrapsLines = 1; };
+		CF26DE2321D28754003F0E93 /* SearchInFile_UT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SearchInFile_UT.cpp; path = tests/SearchInFile_UT.cpp; sourceTree = SOURCE_ROOT; };
+		CF26DE3521E297AE003F0E93 /* EasyOps_UT.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = EasyOps_UT.mm; path = tests/EasyOps_UT.mm; sourceTree = SOURCE_ROOT; };
 		CF3E2F841F60DF08001BFFCE /* Requests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Requests.cpp; path = source/NetWebDAV/Requests.cpp; sourceTree = "<group>"; };
 		CF3E2F851F60DF08001BFFCE /* Requests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Requests.h; path = source/NetWebDAV/Requests.h; sourceTree = "<group>"; };
 		CF5099931F95C881000AFDE7 /* EncodingDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EncodingDetection.h; path = source/ArcLA/EncodingDetection.h; sourceTree = "<group>"; };
@@ -269,6 +314,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CF26DE1521D285A6003F0E93 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CF26DE2721D2A268003F0E93 /* libUtility.dylib in Frameworks */,
+				CF26DE2621D2A265003F0E93 /* libVFS.dylib in Frameworks */,
+				CF26DE2521D2A260003F0E93 /* libHabanero.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CFFA94AC1F4543840035E606 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -309,8 +364,15 @@
 		CF1846FF1E41C86D008B7C9F /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				CF2343ED22CD31F300F516CB /* NetSFTP */,
+				CF26DE3521E297AE003F0E93 /* EasyOps_UT.mm */,
+				CF26DE0E21CFA2CC003F0E93 /* FileWindow_Tests.mm */,
 				CF1847021E41C86D008B7C9F /* Info.plist */,
+				CF24E1FD2290200400C166FA /* SearchForFiles_IT.cpp */,
+				CF26DE2321D28754003F0E93 /* SearchInFile_UT.cpp */,
 				CF1847091E41C8A5008B7C9F /* tests_common.h */,
+				CF26DE2021D2864D003F0E93 /* Tests.cpp */,
+				CF26DE1F21D2864D003F0E93 /* Tests.h */,
 				CF18470A1E41C8A5008B7C9F /* VFSArchive_Tests.mm */,
 				CF1168851E91FE6D00CC515A /* VFSDropbox_Tests.mm */,
 				CF18470B1E41C8A5008B7C9F /* VFSFTP_Tests.mm */,
@@ -346,12 +408,21 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		CF2343ED22CD31F300F516CB /* NetSFTP */ = {
+			isa = PBXGroup;
+			children = (
+				CF2343EE22CD321300F516CB /* KeyValidator_UT.cpp */,
+			);
+			name = NetSFTP;
+			sourceTree = "<group>";
+		};
 		CF5FD92B1FA1BCE900752E59 /* Config */ = {
 			isa = PBXGroup;
 			children = (
-				CF5FD92C1FA1BD0700752E59 /* default.xcconfig */,
 				CF197BFA1FB2CE1D009F6C59 /* debug.xcconfig */,
+				CF5FD92C1FA1BD0700752E59 /* default.xcconfig */,
 				CF197BFC1FB2CE33009F6C59 /* release.xcconfig */,
+				CF26DE2221D28699003F0E93 /* tests.xcconfig */,
 			);
 			name = Config;
 			sourceTree = "<group>";
@@ -373,6 +444,7 @@
 			children = (
 				CF1846FE1E41C86D008B7C9F /* VFS Tests.xctest */,
 				CFFA94AF1F4543840035E606 /* libVFS.dylib */,
+				CF26DE1821D285A6003F0E93 /* libVFSUT */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -383,11 +455,17 @@
 				CF69D05D1DA233EC00992B84 /* AppleDoubleEA.h */,
 				CF69CFE01DA227E400992B84 /* ArcLA.h */,
 				CF69CFE11DA227E400992B84 /* ArcUnRAR.h */,
+				CF26DE0821CFA2AE003F0E93 /* FileWindow.h */,
+				CF69CFF01DA227E400992B84 /* Host.h */,
 				CF69CFE21DA227E400992B84 /* Native.h */,
 				CF11687A1E91FA9200CC515A /* NetDropbox.h */,
 				CF69CFE31DA227E400992B84 /* NetFTP.h */,
 				CF69CFE41DA227E400992B84 /* NetSFTP.h */,
+				CF26DE0621CFA2AD003F0E93 /* NetWebDAV.h */,
 				CF69CFE51DA227E400992B84 /* PS.h */,
+				CF24E1FB22901C7800C166FA /* SearchForFiles.h */,
+				CF26DE1021D266E0003F0E93 /* SearchInFile.h */,
+				CF26DE0721CFA2AE003F0E93 /* VFS_fwd.h */,
 				CF69CFE71DA227E400992B84 /* VFS.h */,
 				CF69CFE81DA227E400992B84 /* VFSArchiveProxy.h */,
 				CF69CFE91DA227E400992B84 /* VFSConfiguration.h */,
@@ -397,7 +475,6 @@
 				CF69CFED1DA227E400992B84 /* VFSFactory.h */,
 				CF69CFEE1DA227E400992B84 /* VFSFile.h */,
 				CF69CFEF1DA227E400992B84 /* VFSGenericMemReadOnlyFile.h */,
-				CF69CFF01DA227E400992B84 /* Host.h */,
 				CF69D0791DA238D400992B84 /* VFSListingInput.h */,
 				CF69CFF21DA227E400992B84 /* VFSPath.h */,
 				CF69CFF31DA227E400992B84 /* VFSSeqToRandomWrapper.h */,
@@ -418,6 +495,9 @@
 				CFFA95521F4E604D0035E606 /* NetWebDAV */,
 				CF69D06E1DA2352000992B84 /* PS */,
 				CF69D02F1DA231DA00992B84 /* XAttr */,
+				CF26DE1121D266EA003F0E93 /* SearchInFile.cpp */,
+				CF24E1F922901C6800C166FA /* SearchForFiles.cpp */,
+				CF26DE0C21CFA2BF003F0E93 /* FileWindow.cpp */,
 				CF69D00A1DA228C800992B84 /* VFS-prefix.pch */,
 				CF69D00C1DA22BE800992B84 /* VFSArchiveProxy.mm */,
 				CF69D00D1DA22BE800992B84 /* VFSConfiguration.cpp */,
@@ -571,9 +651,13 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF24E1FC22901C7800C166FA /* SearchForFiles.h in Headers */,
 				CF1FDD071F5D4AEC00AF1EBD /* PathRoutines.h in Headers */,
 				CFCE73151F972623009E2FD7 /* Listing.h in Headers */,
+				CF26DE0B21CFA2AE003F0E93 /* FileWindow.h in Headers */,
 				CF3E2F871F60DF08001BFFCE /* Requests.h in Headers */,
+				CF26DE0921CFA2AE003F0E93 /* NetWebDAV.h in Headers */,
+				CF26DE0A21CFA2AE003F0E93 /* VFS_fwd.h in Headers */,
 				CF1FDD031F5BBA6F00AF1EBD /* WriteBuffer.h in Headers */,
 				CF5099951F95C881000AFDE7 /* EncodingDetection.h in Headers */,
 			);
@@ -599,6 +683,23 @@
 			productReference = CF1846FE1E41C86D008B7C9F /* VFS Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		CF26DE1721D285A6003F0E93 /* VFSUT */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CF26DE1C21D285A6003F0E93 /* Build configuration list for PBXNativeTarget "VFSUT" */;
+			buildPhases = (
+				CF26DE1421D285A6003F0E93 /* Sources */,
+				CF26DE1521D285A6003F0E93 /* Frameworks */,
+				CF26DE1621D285A6003F0E93 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VFSUT;
+			productName = VFSUT;
+			productReference = CF26DE1821D285A6003F0E93 /* libVFSUT */;
+			productType = "com.apple.product-type.tool";
+		};
 		CFFA94AE1F4543840035E606 /* VFS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CFFA94B01F4543840035E606 /* Build configuration list for PBXNativeTarget "VFS" */;
@@ -622,11 +723,15 @@
 		CF69CFC71DA224E200992B84 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1010;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "Michael G. Kazakov";
 				TargetAttributes = {
 					CF1846FD1E41C86D008B7C9F = {
 						CreatedOnToolsVersion = 8.1;
+						ProvisioningStyle = Automatic;
+					};
+					CF26DE1721D285A6003F0E93 = {
+						CreatedOnToolsVersion = 10.1;
 						ProvisioningStyle = Automatic;
 					};
 					CFFA94AE1F4543840035E606 = {
@@ -637,10 +742,11 @@
 			};
 			buildConfigurationList = CF69CFCA1DA224E200992B84 /* Build configuration list for PBXProject "VFS" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = CF69CFC61DA224E200992B84;
 			productRefGroup = CF69CFD01DA224E200992B84 /* Products */;
@@ -649,6 +755,7 @@
 			targets = (
 				CFFA94AE1F4543840035E606 /* VFS */,
 				CF1846FD1E41C86D008B7C9F /* VFS Tests */,
+				CF26DE1721D285A6003F0E93 /* VFSUT */,
 			);
 		};
 /* End PBXProject section */
@@ -669,11 +776,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				CF1847101E41C8A5008B7C9F /* VFSPS_Tests.mm in Sources */,
+				CF26DE0F21CFA2CC003F0E93 /* FileWindow_Tests.mm in Sources */,
 				CF1168871E91FE9300CC515A /* VFSDropbox_Tests.mm in Sources */,
 				CFFA95581F4E65A60035E606 /* WebDAV_Tests.mm in Sources */,
 				CF1847251E41CBDF008B7C9F /* VFSSFTP_Tests.mm in Sources */,
 				CF18472E1E41CF6B008B7C9F /* VFSArchive_Tests.mm in Sources */,
 				CFD725FB1E42DD2300603077 /* VFSFTP_Tests.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CF26DE1421D285A6003F0E93 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CF26DE3621E297AE003F0E93 /* EasyOps_UT.mm in Sources */,
+				CF2343EF22CD321300F516CB /* KeyValidator_UT.cpp in Sources */,
+				CF26DE2421D28754003F0E93 /* SearchInFile_UT.cpp in Sources */,
+				CF24E1FF2290200800C166FA /* SearchForFiles_IT.cpp in Sources */,
+				CF26DE2121D2864D003F0E93 /* Tests.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -700,6 +820,7 @@
 				CFFA94D21F4543ED0035E606 /* VFSEasyOps.mm in Sources */,
 				CFFA94CA1F4543BC0035E606 /* KeyValidator.cpp in Sources */,
 				CFFA94CC1F4543C70035E606 /* AppleDoubleEA.cpp in Sources */,
+				CF24E1FA22901C6800C166FA /* SearchForFiles.cpp in Sources */,
 				CFFA956C1F5A477F0035E606 /* File.cpp in Sources */,
 				CFFA94BA1F4543A30035E606 /* DisplayNamesCache.mm in Sources */,
 				CFFA94DB1F4543ED0035E606 /* VFSSeqToRandomWrapper.cpp in Sources */,
@@ -726,8 +847,10 @@
 				CFFA94DA1F4543ED0035E606 /* VFSPath.cpp in Sources */,
 				CFFA94D11F4543ED0035E606 /* VFSConfiguration.cpp in Sources */,
 				CFFA94BB1F4543A30035E606 /* File.cpp in Sources */,
+				CF26DE0D21CFA2C0003F0E93 /* FileWindow.cpp in Sources */,
 				CF3E2F861F60DF08001BFFCE /* Requests.cpp in Sources */,
 				CFFA94D01F4543ED0035E606 /* VFSArchiveProxy.mm in Sources */,
+				CF26DE1321D26B07003F0E93 /* SearchInFile.cpp in Sources */,
 				CFFA94C21F4543AB0035E606 /* Host.mm in Sources */,
 				CFFA94C41F4543B30035E606 /* File.mm in Sources */,
 				CFFA94C51F4543B30035E606 /* Host.mm in Sources */,
@@ -764,10 +887,67 @@
 			};
 			name = Release;
 		};
+		CF26DE1D21D285A6003F0E93 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CF26DE2221D28699003F0E93 /* tests.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		CF26DE1E21D285A6003F0E93 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CF26DE2221D28699003F0E93 /* tests.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 		CF69CFD11DA224E200992B84 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CF197BFA1FB2CE1D009F6C59 /* debug.xcconfig */;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
 		};
@@ -775,6 +955,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CF197BFC1FB2CE33009F6C59 /* release.xcconfig */;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 			};
 			name = Release;
 		};
@@ -798,6 +979,15 @@
 			buildConfigurations = (
 				CF1847061E41C86D008B7C9F /* Debug */,
 				CF1847071E41C86D008B7C9F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CF26DE1C21D285A6003F0E93 /* Build configuration list for PBXNativeTarget "VFSUT" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CF26DE1D21D285A6003F0E93 /* Debug */,
+				CF26DE1E21D285A6003F0E93 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
